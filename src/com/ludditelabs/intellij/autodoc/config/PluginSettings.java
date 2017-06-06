@@ -44,23 +44,8 @@ public class PluginSettings
 
     @NotNull
     private static String buildExePath() {
-        String platform;
-        String exe = "autodoc.bin";
-
-        if (SystemInfo.isWindows) {
-            platform = "win-x32";
-            exe = "autodoc.exe";
-        }
-        else if (SystemInfo.isMac)
-            platform = "mac";
-        else {
-            if (SystemInfo.is64Bit)
-                platform = "linux-x64";
-            else
-                platform = "linux-x32";
-        }
-
-        return getPluginPath("autodoc-" + platform, exe);
+        String ext = SystemInfo.isWindows ? ".exe" : ".bin";
+        return getPluginPath("autodoc-pkg", "autodoc" + ext);
     }
 
     public static PluginSettings getInstance() {
