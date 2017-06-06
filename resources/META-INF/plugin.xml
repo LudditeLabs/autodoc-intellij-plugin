@@ -1,0 +1,39 @@
+<idea-plugin>
+  <id>com.ludditelabs.autodocintellij.plugin</id>
+  <name>autodoc</name>
+  <!-- Note: version is managed by the bumpversion tool. -->
+  <version>0.2.1</version>
+  <vendor email="autodoc@ludditelabs.io" url="http://autodoc.ai/">Luddite Labs</vendor>
+
+  <description><![CDATA[
+      Validate and auto fix source code documentation.
+    ]]></description>
+
+  <change-notes><![CDATA[
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <!--<idea-version since-build="145.0"/>-->
+  <idea-version since-build="141.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+  <application-components>
+    <component>
+      <implementation-class>
+        com.ludditelabs.intellij.autodoc.PluginApp
+      </implementation-class>
+    </component>
+  </application-components>
+</idea-plugin>
