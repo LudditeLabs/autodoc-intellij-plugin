@@ -33,7 +33,14 @@
   </extensions>
 
   <actions>
-    <!-- Add your actions here -->
+    <action id="com.ludditelabs.intellij.autodoc.actions.AutodocCurrentFile"
+            class="com.ludditelabs.intellij.autodoc.actions.AutodocCurrentFile"
+            text="Autodoc current file"
+            icon="/icons/logo.png"
+            description="Validate and auto fix source code documentation of current file">
+      <add-to-group group-id="CodeMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt A"/>
+    </action>
   </actions>
 
   <application-components>
