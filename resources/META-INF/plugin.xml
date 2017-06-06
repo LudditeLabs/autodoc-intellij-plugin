@@ -22,7 +22,14 @@
   <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <applicationService serviceInterface="com.ludditelabs.intellij.autodoc.config.PluginSettings"
+                        serviceImplementation="com.ludditelabs.intellij.autodoc.config.PluginSettings"/>
+    <applicationConfigurable instance="com.ludditelabs.intellij.autodoc.config.PluginConfigurable"
+                             id="com.ludditelabs.autodoc.intellij.config.PluginConfigurable"
+                             groupId="tools"/>
+    <!--Platform bundle update service. -->
+    <applicationService serviceInterface="com.ludditelabs.intellij.common.bundle.BundleManager"
+                        serviceImplementation="com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager" />
   </extensions>
 
   <actions>
