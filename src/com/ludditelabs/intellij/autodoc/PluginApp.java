@@ -3,9 +3,9 @@ package com.ludditelabs.intellij.autodoc;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.ludditelabs.intellij.autodoc.actions.AutodocFileTask;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
 import org.jetbrains.annotations.NotNull;
@@ -60,11 +60,11 @@ public class PluginApp implements ApplicationComponent {
      * Processing will run in a cancelable background task.
      *
      * @param project current project.
-     * @param file file to process.
+     * @param document document to process.
      * @see AutodocFileTask
      */
-    public void run(@NotNull Project project, @NotNull final VirtualFile file) {
+    public void run(@NotNull Project project, @NotNull final Document document) {
         ProgressManager.getInstance().run(
-            new AutodocFileTask(project, file));
+            new AutodocFileTask(project, document));
     }
 }

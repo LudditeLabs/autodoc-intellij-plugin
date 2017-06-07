@@ -32,6 +32,6 @@ public class AutodocCurrentFile extends AnAction {
             return;
 
         FileDocumentManager.getInstance().saveDocument(document);
-        PluginApp.getInstance().run(project, file);
+        PluginApp.getInstance().run(project, document);
     }
 }
