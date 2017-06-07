@@ -89,22 +89,11 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
 
     /**
      * Create common autodoc command.
-     * It adds java exe and common parameters.
-     *
      * @return autodoc command with basic parameters.
      */
     protected ExternalCommand createCommand() {
         ExternalCommand cmd = new ExternalCommand(project(), m_exePath);
-
-//        // Force current JRE.
-//        String exe = SystemInfo.isWindows ? "java.exe" : "java";
-//        String jre_home = System.getProperty("java.home");
-//        String java_path = Paths.get(jre_home, "bin", exe).toString();
-//        cmd.addParameters("--java-exe", java_path);
-//
-//        cmd.addParameters("--no-backup");
         cmd.addParameters("--fix");
-
         return cmd;
     }
 
