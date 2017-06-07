@@ -93,7 +93,6 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
      */
     protected ExternalCommand createCommand() {
         ExternalCommand cmd = new ExternalCommand(project(), m_exePath);
-        cmd.addParameters("--fix");
         return cmd;
     }
 
