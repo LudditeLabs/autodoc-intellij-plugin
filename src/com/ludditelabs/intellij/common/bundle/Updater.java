@@ -37,7 +37,10 @@ public class Updater {
         /** Gets called on busy state changes. */
         void stateChanged(boolean busy);
 
-        /** Gets called each time new remote metadata is downloaded. */
+        /**
+         * Gets called each time new remote metadata is downloaded.
+         * @param metadata Downloaded metadata.
+         */
         void metadataDownloaded(@NotNull BundleMetadata metadata);
 
         /** Gets called after remote package in unpacked.*/
@@ -102,6 +105,7 @@ public class Updater {
         AppUIUtil.invokeOnEdt(new Runnable() {
             @Override
             public void run() {
+                // TODO: reloadMetadata() may block main thread.
                 m_localBundle.reloadMetadata();
                 final Notifier pub = ApplicationManager.getApplication()
                     .getMessageBus().syncPublisher(TOPIC);
