@@ -8,8 +8,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.SystemInfo;
 import com.ludditelabs.intellij.autodoc.PluginUtils;
+import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
 import com.ludditelabs.intellij.autodoc.config.PluginSettings;
 import com.ludditelabs.intellij.common.execution.ExternalCommand;
 import com.ludditelabs.intellij.common.execution.ExternalCommandListener;
@@ -17,7 +17,6 @@ import com.ludditelabs.intellij.common.execution.ExternalCommandResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.nio.file.Paths;
 
 
 /**
@@ -131,13 +130,36 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
         // Check if autodoc tool exists.
         File exe = new File(m_exePath);
         if (!exe.exists()) {
-            showError("Can't execute external tool.");
+            PluginBundleManager mgr = PluginBundleManager.getInstance();
+            if (!mgr.getLocalBundle().isExist()) {
+                mgr.showFirstDownloadNotification();
+                return;
+            }
+            else {
+                showError(
+                    "Can't find autodoc tool.\n" +
+                    "Platform bundle is malformed.");
+            }
             return;
         }
 
         // Ensure it's runnable.
-        if (!exe.canExecute())
-            exe.setExecutable(true);
+        if (!exe.canExecute()) {
+            boolean ok = false;
+            try {
+                ok = exe.setExecutable(true);
+            }
+            catch (SecurityException e) {
+                logger.debug(e);
+            }
+
+            if (!ok) {
+                showError(
+                    "Can't run autodoc tool.\n" +
+                    "Platform bundle is malformed.");
+                return;
+            }
+        }
 
         // Make some simple autodoc call to see if there are any runtime
         // errors.
