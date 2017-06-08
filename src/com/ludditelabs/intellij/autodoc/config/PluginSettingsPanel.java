@@ -73,24 +73,13 @@ public class PluginSettingsPanel {
         });
 
         infoPanelHolder.add(m_bundlePanel.getComponent());
+        setBundle(manager.getLocalBundle());
     }
 
-    private boolean setBundle(@NotNull final LocalBundle bundle) {
-        final boolean state = bundle.isExist();
-        if (state) {
-            final BundleMetadata meta = bundle.getMetadata();
-            if (meta != null) {
-                m_bundlePanel.setVersion(meta.version);
-                contentPanel.setVisible(true);
-                return true;
-            }
-        }
-
-        // Something wrong or the bundle is not exists,
-        // so we ask to download again.
-        m_bundlePanel.setNeedInstall();
-        contentPanel.setVisible(false);
-        return state;
+    private void setBundle(@NotNull final LocalBundle bundle) {
+        m_bundlePanel.setLocalMetadata(bundle.getMetadata());
+        contentPanel.setVisible(
+            m_bundlePanel.getUpdateState() != BundleSettingsPanel.UpdateState.FirstInstall);
     }
 
     public JComponent getComponent() {
@@ -98,6 +87,7 @@ public class PluginSettingsPanel {
     }
 
     public void loadFrom(@NotNull PluginSettings settings) {
+        m_bundlePanel.setRemoteMetadata(PluginBundleManager.getInstance().getRemoteBundle().getMetadata());
         setBundle(PluginBundleManager.getInstance().getLocalBundle());
         statisticsCheck.setSelected(settings.canCollectStatistics());
     }

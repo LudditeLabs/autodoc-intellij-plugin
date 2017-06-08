@@ -2,6 +2,7 @@ package com.ludditelabs.intellij.common.bundle;
 
 import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -31,9 +32,11 @@ public class BundleSettingsPanel {
     private EventListenerList m_updateListeners = new EventListenerList();
     private EventListenerList m_installListeners = new EventListenerList();
     private UpdateState m_updateState;
+    @Nullable BundleMetadata m_localMetadata = null;
+    @Nullable BundleMetadata m_remoteMetadata = null;
 
     public BundleSettingsPanel() {
-        setNeedInstall();
+        updateState();
         bttUpdate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,6 +44,44 @@ public class BundleSettingsPanel {
                     ? m_updateListeners : m_installListeners);
             }
         });
+    }
+
+    private void updateState() {
+        if (m_localMetadata == null) {
+            m_updateState = UpdateState.FirstInstall;
+            label.setText("Platform bundle is not installed yet.");
+            bttUpdate.setIcon(AllIcons.Actions.Download);
+            bttUpdate.setText("Install");
+            bttUpdate.setToolTipText("");
+        }
+        else if (m_remoteMetadata != null && m_remoteMetadata.isNewerThan(m_localMetadata)) {
+            m_updateState = UpdateState.NewInstall;
+            bttUpdate.setIcon(AllIcons.General.Information);
+            bttUpdate.setText(String.format("Install version %s...", m_remoteMetadata.version));
+            bttUpdate.setToolTipText(m_remoteMetadata.message);
+        }
+        else {
+            m_updateState = UpdateState.CheckUpdate;
+            bttUpdate.setIcon(AllIcons.Actions.Refresh);
+            bttUpdate.setText("");
+            bttUpdate.setToolTipText("Check for updates");
+        }
+    }
+
+    public void setLocalMetadata(@Nullable BundleMetadata metadata) {
+        m_localMetadata = metadata;
+        if (m_localMetadata != null) {
+            label.setText(String.format("Platform bundle version: %s",
+                m_localMetadata.version));
+        }
+        else
+            label.setText("");
+        updateState();
+    }
+
+    public void setRemoteMetadata(@Nullable BundleMetadata metadata) {
+        m_remoteMetadata = metadata;
+        updateState();
     }
 
     public JComponent getComponent() {
@@ -53,6 +94,11 @@ public class BundleSettingsPanel {
             public void stateChanged(boolean busy) {
                 bttUpdate.setEnabled(!busy);
             }
+
+            @Override
+            public void metadataDownloaded(@NotNull BundleMetadata metadata) {
+                setRemoteMetadata(metadata);
+            }
         });
     }
 
@@ -62,34 +108,6 @@ public class BundleSettingsPanel {
         for (int i = lst.length - 2; i >= 0; i -= 2) {
             if (lst[i] == ActionListener.class)
                 ((ActionListener)lst[i + 1]).actionPerformed(e);
-        }
-    }
-
-    public void setNeedInstall() {
-        m_updateState = UpdateState.FirstInstall;
-        label.setText("Platform bundle is not installed yet.");
-        bttUpdate.setIcon(AllIcons.Actions.Download);
-        bttUpdate.setText("Install");
-        bttUpdate.setToolTipText("");
-    }
-
-    public void setVersion(String version) {
-        label.setText(String.format("Platform bundle version: %s", version));
-        setHasUpdate(false);
-    }
-
-    public void setHasUpdate(boolean state) {
-        if (state) {
-            m_updateState = UpdateState.NewInstall;
-            bttUpdate.setIcon(AllIcons.General.Information);
-            bttUpdate.setText("Install new version...");
-            bttUpdate.setToolTipText("");
-        }
-        else {
-            m_updateState = UpdateState.CheckUpdate;
-            bttUpdate.setIcon(AllIcons.Actions.Refresh);
-            bttUpdate.setText("");
-            bttUpdate.setToolTipText("Check for updates");
         }
     }
 
