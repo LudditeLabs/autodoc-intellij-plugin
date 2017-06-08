@@ -2,7 +2,6 @@ package com.ludditelabs.intellij.common.bundle;
 
 import com.intellij.notification.*;
 import com.intellij.util.Consumer;
-import com.intellij.util.text.VersionComparatorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -249,7 +248,7 @@ public class BundleManager extends Updater {
         downloadMetadata(new Consumer<BundleMetadata>() {
             @Override
             public void consume(final BundleMetadata metadata) {
-                if (isNewer(metadata))
+                if (metadata.isNewerThan(getLocalBundle().getMetadata()))
                     showNewVersionDialog(metadata);
                 else if (noUpdatesRunner != null)
                     noUpdatesRunner.run();
@@ -267,21 +266,9 @@ public class BundleManager extends Updater {
         downloadMetadataSilent(new Consumer<BundleMetadata>() {
             @Override
             public void consume(final BundleMetadata metadata) {
-                if (isNewer(metadata))
+                if (metadata.isNewerThan(getLocalBundle().getMetadata()))
                     showNewVersionNotification(metadata);
             }
         });
-    }
-
-    private boolean isNewer(BundleMetadata remoteMetadata) {
-        Bundle b = getLocalBundle();
-
-        // This must not happen because we always call init() on startup.
-        if (b == null || b.getMetadata() == null) {
-            return true;
-        }
-
-        return VersionComparatorUtil.compare(
-            remoteMetadata.version, b.getMetadata().version) > 0;
     }
 }
