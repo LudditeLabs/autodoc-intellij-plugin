@@ -71,7 +71,7 @@ public class LocalBundle extends Bundle {
         }
         catch (FileNotFoundException e) {
             logger.debug(String.format(
-                "Can't read binary bundle metadata %s", path));
+                "Can't find platform bundle metadata %s", path));
         }
 
         return meta;
