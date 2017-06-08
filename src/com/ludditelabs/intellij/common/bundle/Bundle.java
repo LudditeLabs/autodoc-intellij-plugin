@@ -36,4 +36,22 @@ public class Bundle {
     public void setMetadata(@Nullable BundleMetadata metadata) {
         m_metadata = metadata;
     }
+
+    /**
+     * Return true if this bundle version newer than other bundle version.
+     * @param other Bundle to compare with.
+     * @return boolean
+     */
+    public boolean isNewerThan(@Nullable Bundle other) {
+        if (m_metadata == null)
+            return false;
+        else if (other == null) {
+            return true;
+        }
+        return isNewerThan(other.getMetadata());
+    }
+
+    public boolean isNewerThan(@Nullable BundleMetadata metadata) {
+        return m_metadata != null && m_metadata.isNewerThan(metadata);
+    }
 }
