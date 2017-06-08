@@ -189,7 +189,8 @@ public class Updater {
             @Override
             public void run() {
                 try {
-                    MetadataDownloader dl = new MetadataDownloader(null);
+                    MetadataDownloader dl = new MetadataDownloader(
+                        Updater.this, null);
                     BundleMetadata meta = dl.download();
                     notifyOnMetadata(meta, consumer);
                 }
@@ -218,7 +219,8 @@ public class Updater {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 try {
-                    MetadataDownloader dl = new MetadataDownloader(indicator);
+                    MetadataDownloader dl = new MetadataDownloader(
+                        Updater.this, indicator);
                     BundleMetadata meta = dl.download();
                     notifyOnMetadata(meta, consumer);
                 }
@@ -254,12 +256,14 @@ public class Updater {
                 try {
                     BundleMetadata meta = metadata;
                     if (meta == null) {
-                        MetadataDownloader dl = new MetadataDownloader(indicator);
+                        MetadataDownloader dl = new MetadataDownloader(
+                            Updater.this, indicator);
                         meta = dl.download();
                         notifyOnMetadata(meta, null);
                     }
 
-                    PackageDownloader dl = new PackageDownloader(meta, indicator);
+                    PackageDownloader dl = new PackageDownloader(
+                        Updater.this, meta, indicator);
                     dl.downloadAndUnpack(m_localBundle.getBundlePath());
                 }
                 catch (IOException e) {

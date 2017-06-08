@@ -1,8 +1,6 @@
 package com.ludditelabs.intellij.common.bundle;
 
-
 import com.intellij.notification.*;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.util.Consumer;
 import com.intellij.util.text.VersionComparatorUtil;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +10,7 @@ import javax.swing.event.HyperlinkEvent;
 import java.io.IOException;
 
 /**
- * Application service to install and update platform bundle.
+ * Base class for the application service to install and update platform bundle.
  *
  * It extend Updater class with the following features:
  * <ul>
@@ -21,14 +19,33 @@ import java.io.IOException;
  *     <li>Download and install bundle from notifications.</li>
  * </ul>
  *
- * Add to plugin.xml:
- * <pre>
- * <code>
- *  <applicationService
- *    serviceInterface="com.ludditelabs.intellij.common.bundle.BundleManager"
- *    serviceImplementation="com.ludditelabs.intellij.common.bundle.BundleManager" />
- * </code>
- * </pre>
+ * How to subclass:
+ * <ul>
+ *     <li>
+ *         Subclass from the BundleManager and configure labels and other
+ *         bundle specific parameters.
+ *     </li>
+ *     <li>
+ *         Add to plugin.xml:
+ *         <pre>
+ *         <code>
+ *          <applicationService
+ *            serviceInterface="your.plugin.BundleManagerImpl"
+ *            serviceImplementation="your.plugin.BundleManagerImpl" />
+ *         </code>
+ *         </pre>
+ *     </li>
+ *     <li>
+ *         Optionally implement helper getInstance() method:
+ *         <pre>
+ *         <code>
+ *          public static BundleManagerImpl getInstance() {
+ *              return ServiceManager.getService(BundleManagerImpl.class);
+ *          }
+ *         </code>
+ *         </pre>
+ *     </li>
+ * </ul>
  */
 public class BundleManager extends Updater {
     public static class NotifierAdapter implements Updater.Notifier {
@@ -136,11 +153,6 @@ public class BundleManager extends Updater {
         m_afterFirstDownloadText = text;
     }
 
-    // Service API
-
-    public static BundleManager getInstance() {
-        return ServiceManager.getService(BundleManager.class);
-    }
 
     // Bundle manager API.
 
@@ -153,7 +165,8 @@ public class BundleManager extends Updater {
     }
 
     private void showNewVersionDialog(final BundleMetadata metadata) {
-        final BundleInfoDialog dlg = new BundleInfoDialog(metadata);
+        final BundleInfoDialog dlg = new BundleInfoDialog(
+            getLocalBundle().getMetadata(), metadata);
         dlg.show();
 
         if (dlg.getExitCode() == BundleInfoDialog.OK_EXIT_CODE) {

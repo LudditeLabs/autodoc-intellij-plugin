@@ -16,13 +16,14 @@ import java.nio.file.Paths;
 public class PackageDownloader {
     protected static final Logger logger = Logger.getInstance("ludditelabs.bundle.PackageDownloader");
 
-    @NotNull private final RemoteBundle m_bundle;
+    @NotNull private final Updater m_updater;
     @NotNull private final BundleMetadata m_metadata;
     @Nullable private final ProgressIndicator m_indicator;
 
-    public PackageDownloader(@NotNull BundleMetadata metadata,
+    public PackageDownloader(@NotNull Updater updater,
+                             @NotNull BundleMetadata metadata,
                              @Nullable ProgressIndicator indicator) {
-        m_bundle = BundleManager.getInstance().getRemoteBundle();
+        m_updater = updater;
         m_metadata = metadata;
         m_indicator = indicator;
     }
@@ -35,7 +36,7 @@ public class PackageDownloader {
     }
 
     private String doDownload() throws IOException {
-        String url = m_bundle.getBaseUrl() + m_metadata.dist;
+        String url = m_updater.getRemoteBundle().getBaseUrl() + m_metadata.dist;
         if (m_indicator != null)
             m_indicator.setText("Downloading platform bundle (${length})");
 
@@ -69,30 +70,30 @@ public class PackageDownloader {
 
     public String download() throws IOException {
         try {
-            BundleManager.getInstance().setBusy(true);
+            m_updater.setBusy(true);
             return doDownload();
         }
         finally {
-            BundleManager.getInstance().setBusy(false);
+            m_updater.setBusy(false);
         }
     }
 
     public void unpack(String fileName, String outPath) throws IOException {
         try {
-            BundleManager.getInstance().setBusy(true);
+            m_updater.setBusy(true);
             doUnpack(fileName, outPath);
         }
         finally {
-            BundleManager.getInstance().setBusy(false);
+            m_updater.setBusy(false);
         }
     }
 
     public void downloadAndUnpack(String outPath) throws IOException {
         try {
-            BundleManager.getInstance().setBusy(true);
+            m_updater.setBusy(true);
             doUnpack(doDownload(), outPath);
         } finally {
-            BundleManager.getInstance().setBusy(false);
+            m_updater.setBusy(false);
         }
     }
 }

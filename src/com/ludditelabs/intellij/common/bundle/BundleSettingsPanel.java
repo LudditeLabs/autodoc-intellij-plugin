@@ -1,6 +1,7 @@
 package com.ludditelabs.intellij.common.bundle;
 
 import com.intellij.icons.AllIcons;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -40,17 +41,19 @@ public class BundleSettingsPanel {
                     ? m_updateListeners : m_installListeners);
             }
         });
+    }
 
-        BundleManager.getInstance().subscribe(new BundleManager.NotifierAdapter() {
+    public JComponent getComponent() {
+        return content;
+    }
+
+    public void setBundleManager(@NotNull BundleManager manager) {
+        manager.subscribe(new BundleManager.NotifierAdapter() {
             @Override
             public void stateChanged(boolean busy) {
                 bttUpdate.setEnabled(!busy);
             }
         });
-    }
-
-    public JComponent getComponent() {
-        return content;
     }
 
     private void fireUpdateEvent(ActionEvent e, EventListenerList listeners) {

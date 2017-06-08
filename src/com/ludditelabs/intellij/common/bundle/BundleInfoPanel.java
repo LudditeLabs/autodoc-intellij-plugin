@@ -11,11 +11,8 @@ public class BundleInfoPanel {
     private JLabel newVerLabel;
     private JLabel titleLabel;
 
-    public BundleInfoPanel(@NotNull BundleMetadata remoteMetadata) {
-        BundleManager mgr = BundleManager.getInstance();
-        BundleMetadata local_meta = mgr.getLocalBundle().getMetadata();
-        assert local_meta != null;
-
+    public BundleInfoPanel(@NotNull BundleMetadata localMetadata,
+                           @NotNull BundleMetadata remoteMetadata) {
         titleLabel.setText(String.format(
             "<html>New version <b>%s</b> is available!</html>",
             remoteMetadata.version));
@@ -39,7 +36,7 @@ public class BundleInfoPanel {
 
         infoLabel.setText(builder.toString());
 
-        currentVerLabel.setText(local_meta.version);
+        currentVerLabel.setText(localMetadata.version);
         newVerLabel.setText(remoteMetadata.version);
     }
 

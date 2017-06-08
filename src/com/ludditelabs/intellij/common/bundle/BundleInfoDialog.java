@@ -7,11 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class BundleInfoDialog extends DialogWrapper {
-    private BundleMetadata m_metadata;
-    public BundleInfoDialog(@NotNull BundleMetadata metadata) {
+    @NotNull private final BundleMetadata m_localMetadata;
+    @NotNull private final BundleMetadata m_remoteMetadata;
+    public BundleInfoDialog(@NotNull BundleMetadata localMetadata,
+                            @NotNull BundleMetadata remoteMetadata) {
         super(null);
 
-        m_metadata = metadata;
+        m_localMetadata = localMetadata;
+        m_remoteMetadata = remoteMetadata;
 
         init();
         setTitle("Platform Bundle Update");
@@ -22,7 +25,8 @@ public class BundleInfoDialog extends DialogWrapper {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        BundleInfoPanel panel = new BundleInfoPanel(m_metadata);
+        BundleInfoPanel panel = new BundleInfoPanel(
+            m_localMetadata, m_remoteMetadata);
         return panel.getComponent();
     }
 }
