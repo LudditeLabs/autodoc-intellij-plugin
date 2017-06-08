@@ -9,7 +9,8 @@ import javax.swing.*;
 public class BundleInfoDialog extends DialogWrapper {
     @NotNull private final BundleMetadata m_localMetadata;
     @NotNull private final BundleMetadata m_remoteMetadata;
-    public BundleInfoDialog(@NotNull BundleMetadata localMetadata,
+    public BundleInfoDialog(@NotNull String title,
+                            @NotNull BundleMetadata localMetadata,
                             @NotNull BundleMetadata remoteMetadata) {
         super(null);
 
@@ -17,7 +18,7 @@ public class BundleInfoDialog extends DialogWrapper {
         m_remoteMetadata = remoteMetadata;
 
         init();
-        setTitle("Platform Bundle Update");
+        setTitle(title);
         setOKButtonText("Update");
         setCancelButtonText("Remind Me Later");
     }

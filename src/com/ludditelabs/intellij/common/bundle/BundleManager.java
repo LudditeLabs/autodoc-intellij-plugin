@@ -79,11 +79,12 @@ public class BundleManager extends Updater {
     private NotificationGroup m_infoGroup;
     private Notification m_notification = null;
 
-    private String m_bundleName;
-    private String m_firstDownloadText;
-    private String m_newVersionText;
-    private String m_afterUpdateText;
-    private String m_afterFirstDownloadText;
+    @NotNull private String m_bundleName = "bundle";
+    @NotNull private String m_firstDownloadText = "You need to download Platform Bundle.";
+    @NotNull private String m_newVersionText = "New version is available!";
+    @NotNull private String m_afterUpdateText = "Platform Bundle is updated.";
+    @NotNull private String m_afterFirstDownloadText = "Platform Bundle is installed.";
+    @NotNull private String m_infoDialogTitle = "Platform Bundle Update";
 
     /**
      * Construct manager.
@@ -125,7 +126,7 @@ public class BundleManager extends Updater {
      * Set text to display in the notification if no bundle is installed yet.
      * @param text Text to display.
      */
-    public void setFirstDownloadText(String text) {
+    public void setFirstDownloadText(@NotNull String text) {
         m_firstDownloadText = text;
     }
 
@@ -133,7 +134,7 @@ public class BundleManager extends Updater {
      * Set text to display in the notification if new version is available.
      * @param text Text to display.
      */
-    public void setNewVersionText(String text) {
+    public void setNewVersionText(@NotNull String text) {
         m_newVersionText = text;
     }
 
@@ -141,7 +142,7 @@ public class BundleManager extends Updater {
      * Set text to display in the notification after bundle is updated.
      * @param text Text to display.
      */
-    public void setAfterUpdateText(String text) {
+    public void setAfterUpdateText(@NotNull String text) {
         m_afterUpdateText = text;
     }
 
@@ -149,8 +150,16 @@ public class BundleManager extends Updater {
      * Set text to display in the notification after first bundle installation.
      * @param text Text to display.
      */
-    public void setAfterFirstDownloadText(String text) {
+    public void setAfterFirstDownloadText(@NotNull String text) {
         m_afterFirstDownloadText = text;
+    }
+
+    /**
+     * Set title for the update dialog.
+     * @param text Title text.
+     */
+    public void setInfoDialogTitle(@NotNull String text) {
+        m_infoDialogTitle = text;
     }
 
 
@@ -166,6 +175,7 @@ public class BundleManager extends Updater {
 
     private void showNewVersionDialog(final BundleMetadata metadata) {
         final BundleInfoDialog dlg = new BundleInfoDialog(
+            m_infoDialogTitle,
             getLocalBundle().getMetadata(), metadata);
         dlg.show();
 

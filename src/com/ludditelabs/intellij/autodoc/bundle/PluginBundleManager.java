@@ -29,6 +29,8 @@ public class PluginBundleManager extends BundleManager {
         setAfterFirstDownloadText("Autodoc Platform Bundle is installed.");
         setAfterUpdateText("Autodoc Platform Bundle is updated.");
 
+        setInfoDialogTitle("Autodoc Platform Bundle Update");
+
         subscribe(new BundleManager.NotifierAdapter() {
             @Override
             public void ioError(IOException e) {
