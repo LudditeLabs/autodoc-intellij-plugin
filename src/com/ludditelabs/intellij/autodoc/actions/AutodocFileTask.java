@@ -129,12 +129,20 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
                     return;
                 }
 
-                PluginUtils.showOutput(
-                    project(), result.allContent().trim(), file);
+                String output = result.allContent().trim();
+
+                // NOTE: we show output even on errors.
+                if (!output.isEmpty()) {
+                    PluginUtils.showOutput(project(), output, file);
+                }
 
                 if (!result.isSuccess()) {
                     showError("Finished with errors.");
                     return;
+                }
+
+                if (output.isEmpty()) {
+                    showInfoOnEmptyOutput();
                 }
 
                 // If original file is updated then refresh it in the IDE.

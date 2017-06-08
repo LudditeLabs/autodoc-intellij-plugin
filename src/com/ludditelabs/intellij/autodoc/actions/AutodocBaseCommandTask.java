@@ -74,6 +74,17 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
     }
 
     /**
+     * Show notification on empty autodoc output.
+     *
+     * Usually this means what it didn't detect any issues.
+     */
+    protected void showInfoOnEmptyOutput() {
+        PluginUtils.showNotification(m_project, "Autodoc",
+            "Everything is ok.",
+            NotificationType.INFORMATION);
+    }
+
+    /**
      * Set currently running process handler.
      *
      * If the task gets canceled process of the handler will be destroyed.
