@@ -19,8 +19,7 @@ public class PluginApp implements ApplicationComponent {
 
     // Check for platform bundle and propose to update/download.
     private void checkPlatformBundle() {
-        PluginBundleManager manager =
-            (PluginBundleManager)PluginBundleManager.getInstance();
+        PluginBundleManager manager = PluginBundleManager.getInstance();
 
         if (!manager.getLocalBundle().isExist()) {
             manager.showFirstDownloadNotification();

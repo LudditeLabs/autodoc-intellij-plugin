@@ -30,7 +30,10 @@ public class PluginSettingsPanel {
     }
 
     private void setupPlatformBundlePanel() {
+        PluginBundleManager manager = PluginBundleManager.getInstance();
+
         m_bundlePanel = new BundleSettingsPanel();
+        m_bundlePanel.setBundleManager(manager);
 
         m_bundlePanel.addInstallListener(new ActionListener() {
             @Override
@@ -53,7 +56,7 @@ public class PluginSettingsPanel {
             }
         });
 
-        PluginBundleManager.getInstance().subscribe(new PluginBundleManager.NotifierAdapter() {
+        manager.subscribe(new PluginBundleManager.NotifierAdapter() {
             @Override
             public void ioError(IOException e) {
                 if (panel.isVisible()) {

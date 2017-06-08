@@ -1,12 +1,15 @@
 package com.ludditelabs.intellij.autodoc.bundle;
 
 import com.intellij.notification.*;
+import com.intellij.openapi.components.ServiceManager;
 import com.ludditelabs.intellij.autodoc.config.PluginSettings;
 import com.ludditelabs.intellij.common.bundle.BundleManager;
 
 import java.io.IOException;
 
-
+/**
+ * Bundle manager service for the Autodoc plugin.
+ */
 public class PluginBundleManager extends BundleManager {
     /**
      * Construct autodoc platform bundle manager.
@@ -41,5 +44,9 @@ public class PluginBundleManager extends BundleManager {
                 Notifications.Bus.notify(notification, null);
             }
         });
+    }
+
+    public static PluginBundleManager getInstance() {
+        return ServiceManager.getService(PluginBundleManager.class);
     }
 }

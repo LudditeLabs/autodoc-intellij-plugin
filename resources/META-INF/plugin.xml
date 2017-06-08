@@ -28,7 +28,7 @@
                              id="com.ludditelabs.autodoc.intellij.config.PluginConfigurable"
                              groupId="tools"/>
     <!--Platform bundle update service. -->
-    <applicationService serviceInterface="com.ludditelabs.intellij.common.bundle.BundleManager"
+    <applicationService serviceInterface="com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager"
                         serviceImplementation="com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager" />
   </extensions>
 
