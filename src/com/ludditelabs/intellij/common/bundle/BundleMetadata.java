@@ -12,15 +12,29 @@ import java.util.ArrayList;
  * This class provides platform bundle info.
  */
 public class BundleMetadata {
-    public String dist;
-    public String os;
-    public String python;
-    public String timestamp;
-    public String version;
-    public String arch;
-    public String message;
-    public ArrayList<String> changes;
+    public String dist = null;
+    public String timestamp = null;
+    public String version = null;
+    public String pluginVersion = null;
+    public String message = null;
+    public ArrayList<String> changes = null;
+    public long lastModified = 0;
 
+    public String getVersion() {
+        return version == null ? "N/A" : version;
+    }
+
+    public String getMessage() {
+        return message == null ? "" : message;
+    }
+
+    public boolean hasChanges() {
+        return changes != null && !changes.isEmpty();
+    }
+
+    public boolean isValid() {
+        return dist != null && version != null;
+    }
     /**
      * Return true if this metadata version is newer than
      * version of the given metadata.
