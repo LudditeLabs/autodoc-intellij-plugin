@@ -16,52 +16,44 @@ import java.awt.event.ActionListener;
  *
  * It displays various UI depending on a state:
  * <ul>
- *     <li>"First install" - shows label and install button.</li>
- *     <li>"New install" - shows label and update button.</li>
- *     <li>"Check install" - shows version label and "check for new version"
- *     button.
+ *     <li>No local bundle - shows label and install button.</li>
+ *     <li>Has local bundle - shows local version and button to check updates.
  *     </li>
  * </ul>
  */
 public class BundleSettingsPanel {
-    public enum UpdateState {FirstInstall, NewInstall, CheckUpdate}
-
     private JPanel content;
     private JLabel label;
     private JButton bttUpdate;
     private EventListenerList m_updateListeners = new EventListenerList();
     private EventListenerList m_installListeners = new EventListenerList();
-    private UpdateState m_updateState;
-    @Nullable BundleMetadata m_localMetadata = null;
-    @Nullable BundleMetadata m_remoteMetadata = null;
+    private BundleMetadata m_localMetadata = null;
+    private BundleMetadata m_remoteMetadata = null;
 
     public BundleSettingsPanel() {
         updateState();
         bttUpdate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fireUpdateEvent(e, m_updateState == UpdateState.CheckUpdate
-                    ? m_updateListeners : m_installListeners);
+                fireUpdateEvent(e, m_localMetadata == null
+                    ? m_installListeners : m_updateListeners);
             }
         });
     }
 
     private void updateState() {
         if (m_localMetadata == null) {
-            m_updateState = UpdateState.FirstInstall;
             label.setText("Platform bundle is not installed yet.");
             bttUpdate.setIcon(AllIcons.Actions.Download);
             bttUpdate.setText("Install");
             bttUpdate.setToolTipText("");
         }
         else if (m_remoteMetadata != null && m_remoteMetadata.isNewerThan(m_localMetadata)) {
-            m_updateState = UpdateState.NewInstall;
             bttUpdate.setIcon(AllIcons.General.Information);
-            bttUpdate.setText(String.format("Install version %s...", m_remoteMetadata.version));
-            bttUpdate.setToolTipText(m_remoteMetadata.message);
+            bttUpdate.setText("Install new version ...");
+            bttUpdate.setToolTipText("New version is available!");
         }
         else {
-            m_updateState = UpdateState.CheckUpdate;
             bttUpdate.setIcon(AllIcons.Actions.Refresh);
             bttUpdate.setText("");
             bttUpdate.setToolTipText("Check for updates");
@@ -111,22 +103,34 @@ public class BundleSettingsPanel {
         }
     }
 
-    public UpdateState getUpdateState() {
-        return m_updateState;
-    }
-
+    /**
+     * Subscribe on first install request.
+     * @param l Action listener.
+     */
     public void addInstallListener(ActionListener l) {
         m_installListeners.add(ActionListener.class, l);
     }
 
+    /**
+     * Unsubscribe given listener from the first install request.
+     * @param l Action listener.
+     */
     public void removeInstallListener(ActionListener l) {
         m_installListeners.remove(ActionListener.class, l);
     }
 
+    /**
+     * Subscribe on update request.
+     * @param l Action listener.
+     */
     public void addUpdateListener(ActionListener l) {
         m_updateListeners.add(ActionListener.class, l);
     }
 
+    /**
+     * Unsubscribe given listener from the update request.
+     * @param l Action listener.
+     */
     public void removeUpdateListener(ActionListener l) {
         m_updateListeners.remove(ActionListener.class, l);
     }
