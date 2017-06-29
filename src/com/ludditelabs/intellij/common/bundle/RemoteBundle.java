@@ -1,7 +1,7 @@
 package com.ludditelabs.intellij.common.bundle;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.SystemInfo;
+import com.ludditelabs.intellij.common.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
  * <ul>
  *     <li>
  *         JSON file with bundle metadata
- *         {@code <baseUrl>/<name>-<os>-<arch>.json}
+ *         {@code <baseUrl>/<os>/<arch>/meta.json}
  *     </li>
  *     <li>
  *         Archive with platform dependent files (executables, libs, etc).
@@ -34,14 +34,13 @@ public class RemoteBundle extends Bundle {
      *
      * @param baseUrl Base url for the bundle. It used to build metadata and
      *                archive urls.
-     * @param name Bundle name.
+     * @param displayName Bundle display name.
      */
-    public RemoteBundle(@NotNull String baseUrl, @NotNull String name,
-                        @NotNull String displayName) {
+    public RemoteBundle(@NotNull String baseUrl, @NotNull String displayName) {
         super(displayName);
 
         m_baseUrl = baseUrl;
-        String filename = getMetadataName(name);
+        String filename = getMetadataName();
 
         try {
             URI uri = new URI(m_baseUrl);
@@ -54,26 +53,10 @@ public class RemoteBundle extends Bundle {
 
     // Helper method to construct metadata file name
     // based on current runtime environment.
-    private static String getMetadataName(String name) {
-        String os;
-        String arch;
-
-        if (SystemInfo.isMac)
-            os = "darwin";
-        else if (SystemInfo.isLinux)
-            os = "linux";
-        else if (SystemInfo.isWindows)
-            os = "win";
-        else
-            os = "unsupported";
-
-        // NOTE: we support only x32 binaries for windows (for now).
-        if (SystemInfo.is64Bit && !SystemInfo.isWindows)
-            arch = "64bit";
-        else
-            arch = "32bit";
-
-        return String.format("%s-%s-%s.meta.json", name, os, arch);
+    // See also s3bundle repo: https://bitbucket.org/ludditelabs/s3bundle.
+    private static String getMetadataName() {
+        return String.format("%s/%s/meta.json",
+            Utils.getPlatform(), Utils.getArch());
     }
 
     /** Base URL for the bundle .*/

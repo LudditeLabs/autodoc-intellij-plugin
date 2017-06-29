@@ -19,13 +19,10 @@ public class S3Bundle extends RemoteBundle {
      *
      * @param bucket Name of the S3 bucket.
      * @param folder Folder in the S3 bucket.
-     * @param name Bundle name.
+     * @param displayName Bundle display name.
      */
-    public S3Bundle(String bucket,
-                    String folder,
-                    @NotNull String name,
-                    @NotNull String displayName) {
-        super(buildUrl(bucket, folder), name, displayName);
+    public S3Bundle(String bucket, String folder, @NotNull String displayName) {
+        super(buildUrl(bucket, folder), displayName);
     }
 
     private static String buildUrl(String bucket, String folder) {
