@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.ludditelabs.intellij.common.DownloadUtils;
+import com.ludditelabs.intellij.common.Utils;
 import com.ludditelabs.intellij.common.ZipUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +37,26 @@ public class PackageDownloader {
     }
 
     private String doDownload() throws IOException {
-        String url = m_updater.getRemoteBundle().getBaseUrl() + m_metadata.dist;
+        String url;
+
+        // Seems this is an URL so use as is.
+        if (m_metadata.dist.contains(":/")) {
+            url = m_metadata.dist;
+        }
+        // otherwise construct URL:
+        // <base>/<platform>/<arch>/<plugin version>/<dist filename>
+        // For more info see s3bundle project docs.
+        // NOTE: We don't put '/' between <base> and <platform> because
+        // <base> already has it.
+        else {
+            url = String.format("%s%s/%s/%s/%s",
+                m_updater.getRemoteBundle().getBaseUrl(),
+                Utils.getPlatform(),
+                Utils.getArch(),
+                m_metadata.pluginVersion,
+                m_metadata.dist);
+        }
+
         if (m_indicator != null)
             m_indicator.setText("Downloading platform bundle (${length})");
 

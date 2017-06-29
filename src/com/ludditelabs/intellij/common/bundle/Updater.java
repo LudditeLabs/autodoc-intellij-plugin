@@ -1,5 +1,6 @@
 package com.ludditelabs.intellij.common.bundle;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -48,11 +49,24 @@ public class Updater {
     }
 
     protected static final Logger logger = Logger.getInstance("ludditelabs.bundle.Updater");
-    private RemoteBundle m_remoteBundle = null;
-    private LocalBundle m_localBundle = null;
+    @NotNull private final String m_pluginVersion;
+    @NotNull private RemoteBundle m_remoteBundle;
+    @NotNull private LocalBundle m_localBundle;
     private boolean m_busy = false;
 
-    public Updater() {
+    /**
+     * Construct updater.
+     *
+     * @param pluginVersion Plugin version string.
+     * @param remoteBundle Remote bundle.
+     * @param localBundle Local bundle.
+     */
+    public Updater(@NotNull String pluginVersion,
+                   @NotNull RemoteBundle remoteBundle,
+                   @NotNull LocalBundle localBundle) {
+        m_pluginVersion = pluginVersion;
+        m_remoteBundle = remoteBundle;
+        m_localBundle = localBundle;
     }
 
     private void doSetBusy(boolean state) {
@@ -117,18 +131,6 @@ public class Updater {
     }
 
     /**
-     * Initialize with remote and local bundles.
-     *
-     * @param remoteBundle Remote bundle.
-     * @param localBundle Local bundle.
-     */
-    public void init(@NotNull RemoteBundle remoteBundle,
-                     @NotNull LocalBundle localBundle) {
-        m_remoteBundle = remoteBundle;
-        m_localBundle = localBundle;
-    }
-
-    /**
      * Set busy state.
      *
      * @param state Busy state.
@@ -146,6 +148,22 @@ public class Updater {
                 }
             });
         }
+    }
+
+    /**
+     * Subscribe on Updater notifications.
+     *
+     * Notifier will be automatically un subscribed if given
+     * {@link Disposable disposable parent} is collected.
+     *
+     * Note: handler will be called in the EDT thread.
+     *
+     * @param handler Notifications handler.
+     * @param disposable Parent disposable.
+     */
+    public void subscribe(Notifier handler, Disposable disposable) {
+        ApplicationManager.getApplication().getMessageBus()
+            .connect(disposable).subscribe(TOPIC, handler);
     }
 
     /**
@@ -178,25 +196,63 @@ public class Updater {
         return m_busy;
     }
 
+    /**
+     * Return plugin version string.
+     */
+    @NotNull
+    public String getPluginVersion() {
+        return m_pluginVersion;
+    }
+
     // Download API
 
     /**
-     * Silently download remote metadata in a background without any error
-     * notifications.
+     * Download remote metadata.
      *
      * This method publishes 'metadataDownloaded' notification.
      *
      * @param consumer Metadata consumer. It will be called in the EDT thread.
+     * @param checkLastModified Check remote metadata modification time and
+     *                          download only if its newer than local bundle's
+     *                          timestamp.
+     * @return BundleMetadata or null.
+     * @throws IOException on errors.
      */
-    public void downloadMetadataSilent(@Nullable final Consumer<BundleMetadata> consumer) {
+    private BundleMetadata doDownloadMetadata(@Nullable final Consumer<BundleMetadata> consumer,
+                                              final boolean checkLastModified) throws IOException {
+        MetadataDownloader dl = new MetadataDownloader(
+            Updater.this, null);
+
+        BundleMetadata meta = null;
+
+        // Check if remote metadata is updated by comparing
+        // last modified timestamp with saved one.
+        if (!checkLastModified || dl.needDownloadRemoteMetadata()) {
+            meta = dl.download();
+            notifyOnMetadata(meta, consumer);
+        }
+
+        return meta;
+    }
+
+    /**
+     * Silently download remote metadata in a background thread without
+     * any error notifications.
+     *
+     * This method publishes 'metadataDownloaded' notification.
+     *
+     * @param consumer Metadata consumer. It will be called in the EDT thread.
+     * @param checkLastModified Check remote metadata modification time and
+     *                          download only if its newer than local bundle's
+     *                          timestamp.
+     */
+    private void downloadMetadataSilent(@Nullable final Consumer<BundleMetadata> consumer,
+                                        final boolean checkLastModified) {
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    MetadataDownloader dl = new MetadataDownloader(
-                        Updater.this, null);
-                    BundleMetadata meta = dl.download();
-                    notifyOnMetadata(meta, consumer);
+                    doDownloadMetadata(consumer, checkLastModified);
                 }
                 catch (IOException e) {
                     logger.error(e);
@@ -206,13 +262,17 @@ public class Updater {
     }
 
     /**
-     * Download metadata in the background task with progress indicator.
+     * Download remote metadata in a foreground.
      *
      * This method publishes 'metadataDownloaded' notification.
      *
      * @param consumer Metadata consumer. It will be called in the EDT thread.
+     * @param checkLastModified Check remote metadata modification time and
+     *                          download only if its newer than local bundle's
+     *                          timestamp.
      */
-    public void downloadMetadata(@NotNull final Consumer<BundleMetadata> consumer) {
+    private void downloadMetadataModal(@Nullable final Consumer<BundleMetadata> consumer,
+                                       final boolean checkLastModified) {
         String title = m_remoteBundle.getDisplayName() + " Platform Bundle Info";
         new Task.Modal(null, title, true) {
             @Override
@@ -223,10 +283,7 @@ public class Updater {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 try {
-                    MetadataDownloader dl = new MetadataDownloader(
-                        Updater.this, indicator);
-                    BundleMetadata meta = dl.download();
-                    notifyOnMetadata(meta, consumer);
+                    doDownloadMetadata(consumer, checkLastModified);
                 }
                 catch (IOException e) {
                     notifyError(e);
@@ -236,9 +293,30 @@ public class Updater {
     }
 
     /**
-     * Download remote package in a background thread with progress indicator.
+     * Download metadata.
      *
-     * If metadata is not provided then it will be loaded.
+     * This method publishes 'metadataDownloaded' notification.
+     *
+     * @param consumer Metadata consumer. It will be called in the EDT thread.
+     * @param silent Download silently or in a foreground.
+     * @param checkLastModified Check remote metadata modification time and
+     *                          download only if its newer than local bundle's
+     *                          timestamp.
+     */
+    public void downloadMetadata(@NotNull final Consumer<BundleMetadata> consumer,
+                                 boolean silent,
+                                 final boolean checkLastModified) {
+        if (silent)
+            downloadMetadataSilent(consumer, checkLastModified);
+        else
+            downloadMetadataModal(consumer, checkLastModified);
+    }
+
+    /**
+     * Download remote package in a foreground with progress indicator.
+     *
+     * If metadata is not provided or remote side has new one
+     * then it will be loaded.
      *
      * This method publishes 'metadataDownloaded' and 'unpacked' notifications.
      *
@@ -258,13 +336,15 @@ public class Updater {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 try {
-                    BundleMetadata meta = metadata;
-                    if (meta == null) {
-                        MetadataDownloader dl = new MetadataDownloader(
-                            Updater.this, indicator);
-                        meta = dl.download();
-                        notifyOnMetadata(meta, null);
-                    }
+                    // Re-download metadata if given metadata is null
+                    // otherwise download only if remote meta was changed.
+                    BundleMetadata meta = doDownloadMetadata(
+                        null, metadata != null);
+
+                    // If 'meta' is null this means remote metadata is not
+                    // changed so we can use 'metadata' object.
+                    if (meta == null)
+                        meta = metadata;
 
                     PackageDownloader dl = new PackageDownloader(
                         Updater.this, meta, indicator);
@@ -281,6 +361,7 @@ public class Updater {
 
     /**
      * Download remote bundle (both metadata and package) and unpack it.
+     *
      * @param runnable Runnable to call after unpacking. it will be called
      *                 in the EDT thread.
      */

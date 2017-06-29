@@ -90,15 +90,10 @@ public class BundleManager extends Updater {
      *
      * Do nothing by default.
      */
-    public BundleManager() {
-    }
-
-    // Updater API
-
-    @Override
-    public void init(@NotNull RemoteBundle remoteBundle,
-                     @NotNull LocalBundle localBundle) {
-        super.init(remoteBundle, localBundle);
+    public BundleManager(@NotNull String pluginVersion,
+                         @NotNull RemoteBundle remoteBundle,
+                         @NotNull LocalBundle localBundle) {
+        super(pluginVersion, remoteBundle, localBundle);
 
         m_bundleName = localBundle.getDisplayName();
 
@@ -110,6 +105,8 @@ public class BundleManager extends Updater {
             m_bundleName + " Bundle",
             NotificationDisplayType.BALLOON, true);
     }
+
+    // Updater API
 
     public void setBusy(boolean state) {
         if (m_notification != null) {
@@ -160,7 +157,6 @@ public class BundleManager extends Updater {
     public void setInfoDialogTitle(@NotNull String text) {
         m_infoDialogTitle = text;
     }
-
 
     // Bundle manager API.
 
@@ -253,7 +249,7 @@ public class BundleManager extends Updater {
                 else if (noUpdatesRunner != null)
                     noUpdatesRunner.run();
             }
-        });
+        }, false, false);
     }
 
     /**
@@ -263,12 +259,12 @@ public class BundleManager extends Updater {
      * than local bundle. And shows install dialog if so.
      */
     public void checkUpdateSilent() {
-        downloadMetadataSilent(new Consumer<BundleMetadata>() {
+        downloadMetadata(new Consumer<BundleMetadata>() {
             @Override
             public void consume(final BundleMetadata metadata) {
                 if (metadata.isNewerThan(getLocalBundle().getMetadata()))
                     showNewVersionNotification(metadata);
             }
-        });
+        }, true, true);
     }
 }
