@@ -1,5 +1,6 @@
 package com.ludditelabs.intellij.autodoc.config;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.IdeBorderFactory;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
@@ -14,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 
-public class PluginSettingsPanel {
+public class PluginSettingsPanel implements Disposable {
     private JPanel panel;
     private JPanel infoPanelHolder;
     private JPanel contentPanel;
@@ -70,16 +71,16 @@ public class PluginSettingsPanel {
                     setBundle(PluginBundleManager.getInstance().getLocalBundle());
                 }
             }
-        });
+        }, this);
 
         infoPanelHolder.add(m_bundlePanel.getComponent());
         setBundle(manager.getLocalBundle());
     }
 
     private void setBundle(@NotNull final LocalBundle bundle) {
-        m_bundlePanel.setLocalMetadata(bundle.getMetadata());
-        contentPanel.setVisible(
-            m_bundlePanel.getUpdateState() != BundleSettingsPanel.UpdateState.FirstInstall);
+        BundleMetadata meta = bundle.getMetadata();
+        m_bundlePanel.setLocalMetadata(meta);
+        contentPanel.setVisible(meta != null);
     }
 
     public JComponent getComponent() {
@@ -100,5 +101,10 @@ public class PluginSettingsPanel {
         if (!contentPanel.isVisible())
             return false;
         return settings.canCollectStatistics() != statisticsCheck.isSelected();
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }

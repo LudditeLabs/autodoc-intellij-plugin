@@ -2,6 +2,7 @@ package com.ludditelabs.intellij.autodoc.config;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.util.Disposer;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,6 +55,6 @@ public class PluginConfigurable implements Configurable  {
 
     @Override
     public void disposeUIResources() {
-
+        Disposer.dispose(m_panel);
     }
 }
