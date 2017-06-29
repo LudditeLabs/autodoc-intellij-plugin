@@ -3,6 +3,7 @@ package com.ludditelabs.intellij.autodoc.bundle;
 import com.intellij.notification.*;
 import com.intellij.openapi.components.ServiceManager;
 import com.ludditelabs.intellij.autodoc.config.PluginSettings;
+import com.ludditelabs.intellij.common.Utils;
 import com.ludditelabs.intellij.common.bundle.BundleManager;
 
 import java.io.IOException;
@@ -11,13 +12,20 @@ import java.io.IOException;
  * Bundle manager service for the Autodoc plugin.
  */
 public class PluginBundleManager extends BundleManager {
+    // See <id> value in the resources/META-INF/plugin.xml file.
+    private static String ID = "com.ludditelabs.autodocintellij.plugin";
+    private static final NotificationGroup m_errGroup = new NotificationGroup(
+        "Autodoc Platform Bundle Error",
+        NotificationDisplayType.STICKY_BALLOON,
+        true
+    );
+
     /**
      * Construct autodoc platform bundle manager.
      */
     public PluginBundleManager() {
-        String path = PluginSettings.getPluginPath();
-
-        init(new PluginRemoteBundle(), new PluginLocalBundle(path));
+        super(Utils.getPluginVersion(ID), new PluginRemoteBundle(),
+            new PluginLocalBundle(PluginSettings.getPluginPath()));
 
         setFirstDownloadText(
             "You need to download Platform Bundle " +
@@ -34,12 +42,7 @@ public class PluginBundleManager extends BundleManager {
         subscribe(new BundleManager.NotifierAdapter() {
             @Override
             public void ioError(IOException e) {
-                NotificationGroup group = new NotificationGroup(
-                    "Autodoc Platform Bundle Error",
-                    NotificationDisplayType.STICKY_BALLOON,
-                    true
-                );
-                Notification notification = group.createNotification(
+                Notification notification = m_errGroup.createNotification(
                     "Autodoc Platform Bundle Error",
                     e.getLocalizedMessage(),
                     NotificationType.ERROR, null);
