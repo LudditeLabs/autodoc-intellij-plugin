@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * This class represents autodoc remote platform bundle.
  */
 public class PluginRemoteBundle extends S3Bundle {
-    private static final String BUCKET = "intellij-plugins-data";
+    private static final String BUCKET = "ludditelabs-bundles";
     private static final String FOLDER = "autodoc";
     private static final String DISPLAY_NAME = "Autodoc";
 
