@@ -69,3 +69,4 @@ fabric.properties
 
 .idea/
 !.idea/modules.xml
+!lib/*.jar
