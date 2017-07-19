@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.ludditelabs.intellij.autodoc.actions.AutodocFileTask;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
+import com.ludditelabs.intellij.autodoc.statistics.StatisticsManager;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -39,6 +40,7 @@ public class PluginApp implements ApplicationComponent {
 
     @Override
     public void initComponent() {
+        StatisticsManager.init();
         checkPlatformBundle();
     }
 

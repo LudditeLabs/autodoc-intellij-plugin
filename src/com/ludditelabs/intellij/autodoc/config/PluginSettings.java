@@ -5,6 +5,7 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.SystemInfo;
+import com.ludditelabs.intellij.autodoc.statistics.StatisticsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +29,7 @@ public class PluginSettings
     static class State {
         public boolean canCollectStatistics = true;
         public boolean showStatisticsNotification = true;
+        public long statisticsLastUploadTimestamp = 0;
     }
 
     // See <id> value in the resources/META-INF/plugin.xml file.
@@ -91,6 +93,7 @@ public class PluginSettings
     @Override
     public void loadState(State state) {
         m_state = state;
+        StatisticsManager.setActive(m_state.canCollectStatistics);
     }
 
     // PluginSettings API
@@ -101,6 +104,7 @@ public class PluginSettings
 
     public void setCanCollectStatistics(boolean state) {
         m_state.canCollectStatistics = state;
+        StatisticsManager.setActive(m_state.canCollectStatistics);
     }
 
     public boolean showStatisticsNotification() {
@@ -109,6 +113,14 @@ public class PluginSettings
 
     public void setShowStatisticsNotification(boolean state) {
         m_state.showStatisticsNotification = state;
+    }
+
+    public long statisticsLastUploadTimestamp() {
+        return m_state.statisticsLastUploadTimestamp;
+    }
+
+    public void setStatisticsLastUploadTimestamp(long value) {
+        m_state.statisticsLastUploadTimestamp = value;
     }
 
     @NotNull

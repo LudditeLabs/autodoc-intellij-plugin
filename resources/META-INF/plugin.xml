@@ -30,6 +30,9 @@
     <!--Platform bundle update service. -->
     <applicationService serviceInterface="com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager"
                         serviceImplementation="com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager" />
+
+    <applicationService serviceInterface="com.ludditelabs.intellij.autodoc.statistics.StatisticsManager"
+                        serviceImplementation="com.ludditelabs.intellij.autodoc.statistics.StatisticsManager" />
   </extensions>
 
   <actions>

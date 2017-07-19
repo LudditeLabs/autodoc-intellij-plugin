@@ -9,6 +9,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.ludditelabs.intellij.autodoc.PluginApp;
+import com.ludditelabs.intellij.autodoc.statistics.StatisticsManager;
 
 
 /**
@@ -33,5 +34,6 @@ public class AutodocCurrentFile extends AnAction {
 
         FileDocumentManager.getInstance().saveDocument(document);
         PluginApp.getInstance().run(project, document);
+        StatisticsManager.countUsage(file);
     }
 }
