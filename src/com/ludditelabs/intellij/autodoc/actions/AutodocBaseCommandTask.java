@@ -47,22 +47,6 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
         m_exePath = PluginSettings.getInstance().exePath();
     }
 
-    private void collectStatistics() {
-        if (!PluginSettings.getInstance().canCollectStatistics())
-            return;
-
-        try {
-            doCollectStatistics();
-        }
-        catch (Exception e) {
-            logger.debug(e);
-        }
-    }
-
-    protected void doCollectStatistics() throws Exception {
-
-    }
-
     /**
      * Show error notification with the given message.
      *
@@ -135,8 +119,6 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
     @Override
     public void run(@NotNull final ProgressIndicator indicator) {
         indicator.setIndeterminate(true);
-
-        collectStatistics();
 
         // Check if autodoc tool exists.
         File exe = new File(m_exePath);

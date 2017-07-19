@@ -49,13 +49,6 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
         m_document = document;
     }
 
-    @Override
-    protected void doCollectStatistics()
-        throws Exception {
-        // TODO: update statistics
-//        PluginApp.getInstance().statistics().countUsage(m_file);
-    }
-
     @Nullable
     private String getTempFilename() {
         try {
