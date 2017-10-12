@@ -32,7 +32,7 @@ public class StatisticsManager {
         // You may add -Dludditelabs.autodoc.statistics.upload_action=true
         // to show "Code->Upload autodoc statistics" menu item
         // which forces statistics uploading process.
-        String add = System.getProperty("ludditelabs.autodoc.statistics.upload_action");
+        String add = System.getProperty("ludditelabs.autodoc.statistics.upload_action", "false");
         if (add.equals("true")) {
             AnAction action = new AnAction("Upload autodoc statistics") {
                 @Override
