@@ -1,7 +1,5 @@
 package com.ludditelabs.intellij.autodoc.actions;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.diagnostic.Logger;
@@ -12,9 +10,8 @@ import com.ludditelabs.intellij.autodoc.PluginUtils;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
 import com.ludditelabs.intellij.autodoc.config.PluginSettings;
 import com.ludditelabs.intellij.common.execution.ExternalCommand;
-import com.ludditelabs.intellij.common.execution.ExternalCommandListener;
-import com.ludditelabs.intellij.common.execution.ExternalCommandResult;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -31,7 +28,7 @@ import java.io.File;
  */
 public class AutodocBaseCommandTask extends Task.Backgroundable {
     private static final Logger LOG = Logger.getInstance("ludditelabs.autodoc.task");
-    private final @NotNull Project m_project;
+    @NotNull private final Project m_project;
     private final String m_exePath;
     private boolean m_canceled = false;
     private ProcessHandler m_handler = null;
@@ -72,12 +69,13 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
      * Set currently running process handler.
      *
      * If the task gets canceled process of the handler will be destroyed.
-     * So call this method each time you start new process in the task to
-     * support cancellation (or reimplement onCancel() method).
      *
      * @param handler process handler.
      */
-    protected void setCurrentHandler(ProcessHandler handler) {
+    protected void setCurrentHandler(@Nullable ProcessHandler handler) {
+        if (m_handler != null) {
+            m_handler.destroyProcess();
+        }
         m_handler = handler;
     }
 
@@ -91,10 +89,25 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
     }
 
     /**
+     * This method gets called before processing.
+     */
+    protected void onBeforeRun() {
+
+    }
+
+    /**
      * This method gets called after autodoc tool validation process.
      * It supposed to be overridden by the subclass to do actual work.
      */
     protected void execute(@NotNull final ProgressIndicator indicator) {
+
+    }
+
+    /**
+     * This method gets called after executing external command and processing
+     * its result.
+     */
+    protected void onAfterRun() {
 
     }
 
@@ -108,32 +121,30 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
         return m_project;
     }
 
-    /** Destroy current process. */
+    // NOTE: This callback will be invoked on AWT dispatch thread.
+    // TODO: is it ok what we destroy process here?
     @Override
     public void onCancel() {
-        m_canceled = true;
-        if (m_handler != null)
-            m_handler.destroyProcess();
+        if (m_handler != null) {
+            setCurrentHandler(null);
+        }
     }
 
-    @Override
-    public void run(@NotNull final ProgressIndicator indicator) {
-        indicator.setIndeterminate(true);
-
+    private boolean checkExe() {
         // Check if autodoc tool exists.
         File exe = new File(m_exePath);
         if (!exe.exists()) {
             PluginBundleManager mgr = PluginBundleManager.getInstance();
             if (!mgr.getLocalBundle().isExist()) {
                 mgr.showFirstDownloadNotification(m_project);
-                return;
+                return false;
             }
             else {
                 showError(
                     "Can't find autodoc tool.\n" +
-                    "Platform bundle is malformed.");
+                        "Platform bundle is malformed.");
             }
-            return;
+            return false;
         }
 
         // Ensure it's runnable.
@@ -149,53 +160,38 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
             if (!ok) {
                 showError(
                     "Can't run autodoc tool.\n" +
-                    "Platform bundle is malformed.");
-                return;
+                        "Platform bundle is malformed.");
+                return false;
             }
         }
+        return true;
+    }
 
-        // Make some simple autodoc call to see if there are any runtime
-        // errors.
-        //
-        // This doesn't show all errors but helps to detect common deployment
-        // problems.
-        ExternalCommand cmd = new ExternalCommand(m_project, m_exePath);
-        cmd.addParameters("--help");
-        cmd.addListener(new ExternalCommandListener() {
-            @Override
-            public void startNotified(ProcessEvent event) {
-                setCurrentHandler(event.getProcessHandler());
-            }
+    private void doRun(@NotNull final ProgressIndicator indicator) {
+        if (!checkExe())
+            return;
 
-            @Override
-            public void consume(ExternalCommandResult result) {
-                // Exit if someone canceled the task.
-                if (indicator.isCanceled())
-                    return;
+        else if (indicator.isCanceled() || m_project.isDisposed())
+            return;
 
-                // If this method called then "autodoc --help" is finished.
-                // But if it failed then show error.
-                if (!result.isSuccess())
-                    showError(result.stderr());
+        execute(indicator);
+    }
 
-                // If everything is fine then finally call main task method.
-                else if (!m_project.isDisposed())
-                    execute(indicator);
-            }
-        });
-
+    @Override
+    public void run(@NotNull final ProgressIndicator indicator) {
         try {
-            cmd.execute();
-        }
-        catch (ExecutionException e) {
-            showError(e.getMessage());
+            onBeforeRun();
+            indicator.setIndeterminate(true);
+            doRun(indicator);
         }
         finally {
+            setCurrentHandler(null);
             if (indicator.isCanceled()) {
                 m_canceled = true;
                 PluginUtils.showNotification(project(),
                     "Autodoc", "Canceled.", NotificationType.WARNING);
             }
+            onAfterRun();
         }
     }
 }
