@@ -82,6 +82,22 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
     }
 
     @Override
+    protected void onBeforeRun() {
+        // NOTE: Lock state is checked in AutodocCurrentFile action.
+        final VirtualFile file = FileDocumentManager.getInstance().getFile(
+            m_document);
+        PluginUtils.setLockState(file, true);
+    }
+
+    @Override
+    protected void onAfterRun() {
+        // NOTE: Lock state is checked in AutodocCurrentFile action.
+        final VirtualFile file = FileDocumentManager.getInstance().getFile(
+            m_document);
+        PluginUtils.setLockState(file, false);
+    }
+
+    @Override
     protected void execute(@NotNull final ProgressIndicator indicator) {
         final VirtualFile file = FileDocumentManager.getInstance().getFile(
             m_document);
@@ -91,7 +107,6 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
         }
 
         String out_filename = getTempFilename();
-
         ExternalCommand cmd = createCommand();
         cmd.setTitle("Autodoc " + file.getName());
         cmd.setWorkingDirectory(PluginUtils.getRootPath(project(), file));
@@ -129,7 +144,7 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
                 }
 
                 if (!result.isSuccess()) {
-                    showError("Finished with errors.");
+                    showError("Finished with errors.\n" + result.stderr());
                     return;
                 }
 
