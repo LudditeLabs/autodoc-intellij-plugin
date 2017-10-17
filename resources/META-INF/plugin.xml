@@ -44,6 +44,14 @@
       <add-to-group group-id="CodeMenu" anchor="last"/>
       <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt A"/>
     </action>
+    <action id="com.ludditelabs.intellij.autodoc.actions.AutodocCurrentProject"
+            class="com.ludditelabs.intellij.autodoc.actions.AutodocCurrentProject"
+            text="Autodoc project"
+            icon="/icons/logo.png"
+            description="Validate and auto fix source code documentation of current project">
+      <add-to-group group-id="CodeMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt O"/>
+    </action>
   </actions>
 
   <application-components>
