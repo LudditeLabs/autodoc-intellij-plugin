@@ -125,7 +125,7 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
         if (!exe.exists()) {
             PluginBundleManager mgr = PluginBundleManager.getInstance();
             if (!mgr.getLocalBundle().isExist()) {
-                mgr.showFirstDownloadNotification();
+                mgr.showFirstDownloadNotification(m_project);
                 return;
             }
             else {
