@@ -16,7 +16,6 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
-import com.ludditelabs.intellij.autodoc.PluginApp;
 import com.ludditelabs.intellij.autodoc.PluginUtils;
 import com.ludditelabs.intellij.autodoc.ui.AutodocToolWindow;
 import com.ludditelabs.intellij.common.execution.ExternalCommand;
@@ -34,7 +33,7 @@ import java.util.Collections;
  * Task to process single file by the autodoc tool.
  */
 public class AutodocFileTask extends AutodocBaseCommandTask {
-    private static final Logger logger = Logger.getInstance("ludditelabs.autodoc.task.file");
+    private static final Logger LOG = Logger.getInstance("ludditelabs.autodoc.task.file");
     private final @NotNull Document m_document;
 
     /**
@@ -163,7 +162,7 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
 
         try {
             indicator.setText(cmd.title() + "...");
-            logger.debug(cmd.commandLineString());
+            LOG.debug(cmd.commandLineString());
             cmd.execute();
         }
         catch (ExecutionException e) {

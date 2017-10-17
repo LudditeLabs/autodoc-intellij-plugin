@@ -13,7 +13,7 @@ import java.sql.*;
  * Thin wrapper for the statistics sqlite database.
  */
 public class StatisticsDb implements AutoCloseable {
-    private static final Logger logger = Logger.getInstance(StatisticsDb.class);
+    private static final Logger LOG = Logger.getInstance(StatisticsDb.class);
     private Connection m_conn = null;
 
     public StatisticsDb() throws SQLException {
@@ -43,12 +43,12 @@ public class StatisticsDb implements AutoCloseable {
             return conn;
         }
         catch (ClassNotFoundException e) {
-            logger.debug(e);
+            LOG.debug(e);
             close();
             throw new SQLException(e.getMessage());
         }
         catch (SQLException e) {
-            logger.debug(e);
+            LOG.debug(e);
             close();
             throw e;
         }
@@ -84,7 +84,7 @@ public class StatisticsDb implements AutoCloseable {
                 m_conn.close();
             }
             catch (SQLException e) {
-                logger.debug(e);
+                LOG.debug(e);
                 throw e;
             }
             finally {

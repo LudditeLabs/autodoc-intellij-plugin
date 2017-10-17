@@ -30,7 +30,7 @@ import java.io.File;
  * Also it supports task cancellation.
  */
 public class AutodocBaseCommandTask extends Task.Backgroundable {
-    private static final Logger logger = Logger.getInstance("ludditelabs.autodoc.task");
+    private static final Logger LOG = Logger.getInstance("ludditelabs.autodoc.task");
     private final @NotNull Project m_project;
     private final String m_exePath;
     private boolean m_canceled = false;
@@ -143,7 +143,7 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
                 ok = exe.setExecutable(true);
             }
             catch (SecurityException e) {
-                logger.debug(e);
+                LOG.debug(e);
             }
 
             if (!ok) {

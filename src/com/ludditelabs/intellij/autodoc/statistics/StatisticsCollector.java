@@ -16,7 +16,7 @@ import java.util.TimeZone;
  * This class collects statistics and stores it in sqlite getDatabase.
  */
 public class StatisticsCollector {
-    private static final Logger logger = Logger.getInstance(StatisticsCollector.class);
+    private static final Logger LOG = Logger.getInstance(StatisticsCollector.class);
     @NotNull private final SimpleDateFormat m_dateFmt;
     @Nullable private StatisticsDb m_db = null;
     private PreparedStatement m_usageStmt = null;
@@ -30,7 +30,7 @@ public class StatisticsCollector {
         }
         catch (SQLException e) {
             cleanup();
-            logger.debug(e);
+            LOG.debug(e);
         }
     }
 
@@ -49,7 +49,7 @@ public class StatisticsCollector {
                 m_db.close();
             }
             catch (SQLException e) {
-                logger.debug(e);
+                LOG.debug(e);
             }
             finally {
                 m_db = null;
@@ -87,7 +87,7 @@ public class StatisticsCollector {
             m_usageStmt.executeUpdate();
         }
         catch (SQLException e) {
-            logger.debug(e);
+            LOG.debug(e);
         }
     }
 

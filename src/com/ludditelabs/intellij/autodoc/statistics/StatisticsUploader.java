@@ -30,7 +30,7 @@ import java.util.Date;
  * retrieved list to remote server in JSON format.
  */
 public class StatisticsUploader implements Runnable {
-    private static final Logger logger = Logger.getInstance(StatisticsUploader.class);
+    private static final Logger LOG = Logger.getInstance(StatisticsUploader.class);
     @Nullable private final StatisticsDb m_db;
 
     private class DailyUsage {
@@ -89,7 +89,7 @@ public class StatisticsUploader implements Runnable {
      */
     private boolean canUpload() throws SQLException {
         if (m_db == null) {
-            logger.debug("Database is NULL!");
+            LOG.debug("Database is NULL!");
             return false;
         }
 
@@ -100,18 +100,18 @@ public class StatisticsUploader implements Runnable {
         // If last_upload is not set then most probably DB is just created.
         // Set to current date to prevent uploading today.
         if (val == null) {
-            logger.debug("Last upload date is not available.");
+            LOG.debug("Last upload date is not available.");
             update_date = true;
         }
 
         else {
-            logger.debug("Last upload date: " + val);
+            LOG.debug("Last upload date: " + val);
             try {
                 need = DateUtils.utcDateNow().after(
                     DateUtils.dateFromString(val));
             }
             catch (ParseException e) {
-                logger.debug(e);
+                LOG.debug(e);
                 // Exception may happen if last_upload value is malformed
                 // so we force update value to fix that.
                 update_date = true;
@@ -131,7 +131,7 @@ public class StatisticsUploader implements Runnable {
         Date now = DateUtils.utcDateNow();
         final long timestamp = now.getTime();
         String val = DateUtils.toDateString(now);
-        logger.debug("Set last upload date to: " + val);
+        LOG.debug("Set last upload date to: " + val);
         m_db.setMetaValue("last_upload", val);
 
         // See StatisticsManager.canUpload()
@@ -192,7 +192,7 @@ public class StatisticsUploader implements Runnable {
         StatisticsClient client = new StatisticsClient();
         boolean ok = client.sendStatistics(json);
         if (ok)
-            logger.debug("Statistics uploaded successfully.");
+            LOG.debug("Statistics uploaded successfully.");
         return ok;
     }
 
@@ -213,7 +213,7 @@ public class StatisticsUploader implements Runnable {
         }
 
         if (stat.isEmpty()) {
-            logger.debug("No statistics collected, nothing to send yet.");
+            LOG.debug("No statistics collected, nothing to send yet.");
             return;
         }
 
@@ -227,7 +227,7 @@ public class StatisticsUploader implements Runnable {
     public void run() {
         try {
             if (!canUpload()) {
-                logger.debug("Statistics uploading is not required.");
+                LOG.debug("Statistics uploading is not required.");
                 return;
             }
             dropOldStat();
@@ -236,9 +236,9 @@ public class StatisticsUploader implements Runnable {
         catch (SQLException | IOException e) {
             // Don't print stack trace for failed connections.
             if (e instanceof ConnectException)
-                logger.debug("Uploading failed: " + e.getMessage());
+                LOG.debug("Uploading failed: " + e.getMessage());
             else
-                logger.debug(e);
+                LOG.debug(e);
         }
     }
 }
