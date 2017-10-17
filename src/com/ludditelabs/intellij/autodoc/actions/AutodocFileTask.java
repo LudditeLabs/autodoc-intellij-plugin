@@ -82,7 +82,7 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
     }
 
     @Override
-    public void execute(@NotNull final ProgressIndicator indicator) {
+    protected void execute(@NotNull final ProgressIndicator indicator) {
         final VirtualFile file = FileDocumentManager.getInstance().getFile(
             m_document);
         if (file == null) {
@@ -117,7 +117,7 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
             @Override
             public void consume(ExternalCommandResult result) {
                 if (indicator.isCanceled() || isCanceled()) {
-                    AutodocToolWindow.clearConsole(project(), file);
+                    AutodocToolWindow.clearConsole(file);
                     return;
                 }
 

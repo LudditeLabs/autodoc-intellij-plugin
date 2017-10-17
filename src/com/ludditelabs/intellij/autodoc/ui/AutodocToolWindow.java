@@ -43,7 +43,7 @@ public class AutodocToolWindow {
 
             // We store console views as user data inside project or module
             // on create. When someone closes console UI we have to
-            // reset that user data (otherwise next time we'll thing what
+            // reset that user data (otherwise next time we'll thing that
             // console still exists).
             //
             // Also when all consoles are removed we also close tool window
@@ -84,18 +84,15 @@ public class AutodocToolWindow {
 
     // Helper method to create console view.
     // This method adds the console to the plugin's tool window.
-    private static ConsoleView createConsole(@NotNull Project project,
-                                             @Nullable Module module,
-                                             String title,
-                                             @NotNull ToolWindow win) {
+    private static ConsoleView createConsole(@NotNull ToolWindow win,
+                                             @NotNull Project project,
+                                             @NotNull UserDataHolder holder,
+                                             String title) {
         // Create console view.
         ContentFactory factory = ContentFactory.SERVICE.getInstance();
         TextConsoleBuilder consoleBuilder = TextConsoleBuilderFactory.getInstance().createBuilder(project);
         ConsoleView console = consoleBuilder.getConsole();
 
-        // We store console in the module (if not null) or
-        // in the project (for files outside modules).
-        UserDataHolder holder = ObjectUtils.chooseNotNull(module, project);
         holder.putUserData(CONSOLE_KEY, console);
 
         // This holder will be extracted from the component
@@ -109,31 +106,27 @@ public class AutodocToolWindow {
     }
 
     /**
-     * Activate console view for the given module.
+     * Activate console view.
      *
-     * Each module has separate console view. Info about console is attached
-     * to the module or project (if module is null).
-     *
-     * This method creates console if it's not present yet and shows it
+     * This method creates a console if it's not present yet and shows it
      * to the user.
      *
+     * Each holder has separate console view. Info about console is attached
+     * to the holder.
+     *
      * @param project current project.
-     * @param module module for which to create console view.
+     * @param holder console view data holder.
+     * @param title console title.
      * @return console view.
      */
     public static @NotNull
     ConsoleView activateConsole(@NotNull Project project,
-                                @Nullable Module module) {
+                                @NotNull UserDataHolder holder,
+                                String title) {
         ToolWindow win = getToolWindow(project);
-
-        // We store console in the module (if not null) or
-        // in the project (for files outside modules).
-        UserDataHolder holder = ObjectUtils.chooseNotNull(module, project);
         ConsoleView console = holder.getUserData(CONSOLE_KEY);
-        String title = module == null ? "info" : module.getName();
-
         if (console == null)
-            console = createConsole(project, module, title, win);
+            console = createConsole(win, project, holder, title);
 
         Content content = win.getContentManager().getContent(console.getComponent());
         win.getContentManager().setSelectedContent(content);
@@ -143,48 +136,36 @@ public class AutodocToolWindow {
     }
 
     /**
-     * Activate console view for the given file.
+     * Activate console view.
      *
      * @param project current project.
-     * @param file file for which to create console view.
      * @return console view.
      */
     public static @NotNull
-    ConsoleView activateConsole(@NotNull Project project,
-                                @Nullable VirtualFile file) {
-        Module module = file != null ? ModuleUtilCore.findModuleForFile(file, project) : null;
-        return activateConsole(project, module);
+    ConsoleView activateConsole(@NotNull Project project) {
+        return activateConsole(project, project, project.getName());
     }
 
     /**
-     * Clear console content for the given module.
-     *
-     * This method doesn't activate/show tool window, it only performs
-     * cleanup if console is present.
+     * Activate console view.
      *
      * @param project current project.
-     * @param module module to which console is linked.
+     * @return console view.
      */
-    public static void clearConsole(@NotNull Project project,
-                                    @Nullable Module module) {
-        UserDataHolder holder = ObjectUtils.chooseNotNull(module, project);
-        ConsoleView console = holder.getUserData(CONSOLE_KEY);
+    public static @NotNull
+    ConsoleView activateConsole(@NotNull Project project, @NotNull final VirtualFile file) {
+        return activateConsole(project, file, file.getName());
+    }
 
+    /**
+     * Clear console content.
+     *
+     * @param holder to which console is linked.
+     */
+    public static void clearConsole(@NotNull UserDataHolder holder) {
+        ConsoleView console = holder.getUserData(CONSOLE_KEY);
         if (console == null)
             return;
-
         console.clear();
-    }
-
-    /**
-     * Clear console content for the given file.
-     *
-     * @param project current project.
-     * @param file file to which console is linked.
-     */
-    public static void clearConsole(@NotNull Project project,
-                                    @Nullable VirtualFile file) {
-        Module module = file != null ? ModuleUtilCore.findModuleForFile(file, project) : null;
-        clearConsole(project, module);
     }
 }
