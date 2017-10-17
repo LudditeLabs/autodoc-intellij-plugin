@@ -38,7 +38,7 @@
   <actions>
     <action id="com.ludditelabs.intellij.autodoc.actions.AutodocCurrentFile"
             class="com.ludditelabs.intellij.autodoc.actions.AutodocCurrentFile"
-            text="Autodoc current file"
+            text="Autodoc file"
             icon="/icons/logo.png"
             description="Validate and auto fix source code documentation of current file">
       <add-to-group group-id="CodeMenu" anchor="last"/>
@@ -53,4 +53,11 @@
       </implementation-class>
     </component>
   </application-components>
+  <project-components>
+    <component>
+      <implementation-class>
+        com.ludditelabs.intellij.autodoc.PluginProjectComponent
+      </implementation-class>
+    </component>
+  </project-components>
 </idea-plugin>

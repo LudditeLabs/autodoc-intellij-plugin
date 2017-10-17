@@ -16,32 +16,36 @@ import org.jetbrains.annotations.NotNull;
  * Autodoc application service.
  */
 public class PluginApp implements ApplicationComponent {
-    protected static final Logger logger = Logger.getInstance("ludditelabs.autodoc.PluginApp");
+    private boolean m_needInitGlobalParts = true;
 
     // Check for platform bundle and propose to update/download.
-    private void checkPlatformBundle() {
+    private void checkPlatformBundle(Project project) {
         PluginBundleManager manager = PluginBundleManager.getInstance();
 
         if (!manager.getLocalBundle().isExist()) {
-            manager.showFirstDownloadNotification();
+            if (manager.isPlatformSupported()) {
+                manager.showFirstDownloadNotification(project);
+            }
+            else {
+                manager.showUnsupportedPlatformNotification(project);
+            }
         }
         else {
+            // If we have bundle then platform is supported.
+            manager.setPlatformSupported(true);
             // TODO: delay new version check.
             // For example, if last check was less than 2 hrs then don't check.
-            manager.checkUpdateSilent();
+            manager.checkUpdateSilent(project);
         }
     }
 
-    /** Get plugin's application service instance. */
-    public static PluginApp getInstance() {
-        return ApplicationManager.getApplication().getComponent(
-            PluginApp.class);
+    private void doInitGlobalParts(Project project) {
+        StatisticsManager.init();
+        checkPlatformBundle(project);
     }
 
     @Override
     public void initComponent() {
-        StatisticsManager.init();
-        checkPlatformBundle();
     }
 
     @Override
@@ -52,20 +56,19 @@ public class PluginApp implements ApplicationComponent {
     @NotNull
     @Override
     public String getComponentName() {
-        return "LudditeLabsAutodocApp";
+        return getClass().getName();
     }
 
-    /**
-     * Run autodoc on a single file.
-     *
-     * Processing will run in a cancelable background task.
-     *
-     * @param project current project.
-     * @param document document to process.
-     * @see AutodocFileTask
-     */
-    public void run(@NotNull Project project, @NotNull final Document document) {
-        ProgressManager.getInstance().run(
-            new AutodocFileTask(project, document));
+    /** Get plugin's application service instance. */
+    public static PluginApp getInstance() {
+        return ApplicationManager.getApplication().getComponent(
+            PluginApp.class);
+    }
+
+    public void initGlobalParts(Project project) {
+        if (m_needInitGlobalParts) {
+            m_needInitGlobalParts = false;
+            doInitGlobalParts(project);
+        }
     }
 }
