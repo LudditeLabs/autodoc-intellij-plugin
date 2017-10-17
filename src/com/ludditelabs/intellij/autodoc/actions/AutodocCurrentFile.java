@@ -10,6 +10,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.ludditelabs.intellij.autodoc.PluginProjectComponent;
+import com.ludditelabs.intellij.autodoc.PluginUtils;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
 import com.ludditelabs.intellij.autodoc.statistics.StatisticsManager;
 import org.jetbrains.annotations.Nullable;
@@ -22,78 +23,64 @@ import org.jetbrains.annotations.Nullable;
  * Action to run autodoc on current file.
  */
 public class AutodocCurrentFile extends AnAction {
-    /**
-     * Get currently editing file type.
-     *
-     * @return FileType or null.
-     */
-    @Nullable
-    private FileType getCurrentFileType(AnActionEvent e) {
-        final Project project = e.getProject();
-        if (project == null) {
-            return null;
+    private Project m_project;
+    private Editor m_editor;
+    private Document m_document;
+    private VirtualFile m_file;
+
+    private boolean updateFields(AnActionEvent e) {
+        m_project = e.getProject();
+        m_editor = null;
+        m_document = null;
+        m_file = null;
+
+        if (m_project != null) {
+            m_editor = FileEditorManager.getInstance(m_project).getSelectedTextEditor();
+
+            if (m_editor != null) {
+                m_document = m_editor.getDocument();
+                m_file = FileDocumentManager.getInstance().getFile(m_document);
+                return true;
+            }
         }
 
-        final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null) {
-            return null;
-        }
-
-        final Document document = editor.getDocument();
-        final VirtualFile file = FileDocumentManager.getInstance().getFile(document);
-        if (file == null) {
-            return null;
-        }
-
-        return file.getFileType();
+        return false;
     }
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        final Project project = e.getProject();
-        if (project == null)
+        if (!updateFields(e))
+            return;
+
+        // If state is true then the file is already processing.
+        if (PluginUtils.getLockState(m_file))
             return;
 
         PluginProjectComponent component =
-            project.getComponent(PluginProjectComponent.class);
+            m_project.getComponent(PluginProjectComponent.class);
 
-        // This must not happen because we registered this component.
-        if (component == null)
-            return;
-
-        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null)
-            return;
-
-        final Document document = editor.getDocument();
-        final VirtualFile file = FileDocumentManager.getInstance().getFile(document);
-
-        if (file == null)
-            return;
-
-        FileDocumentManager.getInstance().saveDocument(document);
-        component.runAutodoc(document);
-        StatisticsManager.countUsage(file);
+        FileDocumentManager.getInstance().saveDocument(m_document);
+        component.runAutodoc(m_document);
+        StatisticsManager.countUsage(m_file);
     }
 
     @Override
     public void update(AnActionEvent e) {
-        boolean enabled = true;
-
         // Disable action if platform is not supported.
         final PluginBundleManager manager = PluginBundleManager.getInstance();
-        if (!manager.isPlatformSupported()) {
-            enabled = false;
+        if (!manager.isPlatformSupported() || !updateFields(e)) {
+            e.getPresentation().setEnabled(false);
+            return;
         }
 
         // Disable if current file type is not supported.
-        if (enabled) {
-            FileType type = getCurrentFileType(e);
-            if (type == null || !type.getDefaultExtension().equals("py")) {
-                enabled = false;
-            }
+        FileType type = m_file.getFileType();
+        if (!type.getDefaultExtension().equals("py")) {
+            e.getPresentation().setEnabled(false);
+            return;
         }
 
-        e.getPresentation().setEnabled(enabled);
+        boolean is_locked = PluginUtils.getLockState(m_file);
+        e.getPresentation().setEnabled(!is_locked);
     }
 }

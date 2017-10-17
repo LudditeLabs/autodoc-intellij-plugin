@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.ludditelabs.intellij.autodoc.PluginProjectComponent;
+import com.ludditelabs.intellij.autodoc.PluginUtils;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
 
 public class AutodocCurrentProject extends AnAction {
@@ -21,6 +22,10 @@ public class AutodocCurrentProject extends AnAction {
         if (component == null)
             return;
 
+        // If state is true then the project is already processing.
+        if (PluginUtils.getLockState(project))
+            return;
+
         FileDocumentManager.getInstance().saveAllDocuments();
         component.runAutodoc();
     }
@@ -28,6 +33,13 @@ public class AutodocCurrentProject extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         final PluginBundleManager manager = PluginBundleManager.getInstance();
-        e.getPresentation().setEnabled(manager.isPlatformSupported());
+        if (!manager.isPlatformSupported()) {
+            e.getPresentation().setEnabled(false);
+            return;
+        }
+
+        final Project project = e.getProject();
+        boolean is_locked  = project == null || PluginUtils.getLockState(project);
+        e.getPresentation().setEnabled(!is_locked);
     }
 }
