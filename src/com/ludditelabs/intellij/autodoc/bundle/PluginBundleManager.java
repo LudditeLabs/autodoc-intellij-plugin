@@ -27,6 +27,9 @@ public class PluginBundleManager extends BundleManager {
         super(Utils.getPluginVersion(ID), new PluginRemoteBundle(),
             new PluginLocalBundle(PluginSettings.getPluginPath()));
 
+        setUnsupportedPlatformText(
+            "Your OS is not supported by autodoc!"
+        );
         setFirstDownloadText(
             "You need to download Platform Bundle " +
             "before using Autodoc features.");
