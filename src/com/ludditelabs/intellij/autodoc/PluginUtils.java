@@ -10,7 +10,10 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.AppUIUtil;
 import com.ludditelabs.intellij.autodoc.ui.AutodocToolWindow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
  * Various helper utils.
  */
 public class PluginUtils {
+    private static final Key<Boolean> LOCK_KEY = new Key<>("AutodocLock");
+
     /**
      * Get content root path for the given file.
      *
@@ -112,4 +117,35 @@ public class PluginUtils {
             }
         });
     }
+
+    /**
+     * Get lock state for the given object.
+     *
+     * NOTE: must be called in AWT thread.
+     */
+    public static boolean getLockState(@NotNull final UserDataHolder holder) {
+        try {
+            return holder.getUserData(LOCK_KEY);
+        }
+        catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Set lock state for the given object.
+     *
+     * This state is used to indicate what item is processing.
+     */
+    public static void setLockState(@Nullable final UserDataHolder holder, final boolean state) {
+        if (holder != null) {
+            AppUIUtil.invokeOnEdt(new Runnable() {
+                @Override
+                public void run() {
+                    holder.putUserData(LOCK_KEY, state);
+                }
+            });
+        }
+    }
+
 }
