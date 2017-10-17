@@ -74,33 +74,6 @@ public class PluginUtils {
      *
      * @param project current project.
      * @param content content to show.
-     * @param file file to which console is linked.
-     */
-    public static void showOutput(@NotNull final Project project,
-                                  @NotNull final String content,
-                                  @NotNull final VirtualFile file) {
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                if (content.isEmpty())
-                    AutodocToolWindow.clearConsole(file);
-                else {
-                    ConsoleView console = AutodocToolWindow.activateConsole(project, file);
-                    console.clear();
-                    console.print(content, ConsoleViewContentType.NORMAL_OUTPUT);
-                }
-            }
-        });
-    }
-
-    /**
-     * Show content in the tool window console.
-     *
-     * This method popups tool window with console view if there is something
-     * to show. Otherwise console will be silently cleared (without showing).
-     *
-     * @param project current project.
-     * @param content content to show.
      */
     public static void showOutput(@NotNull final Project project,
                                   @NotNull final String content) {

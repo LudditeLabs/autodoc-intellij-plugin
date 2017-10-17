@@ -132,7 +132,7 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
             @Override
             public void consume(ExternalCommandResult result) {
                 if (indicator.isCanceled() || isCanceled()) {
-                    AutodocToolWindow.clearConsole(file);
+                    AutodocToolWindow.clearConsole(project());
                     return;
                 }
 
@@ -140,7 +140,7 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
 
                 // NOTE: we show output even on errors.
                 if (!output.isEmpty()) {
-                    PluginUtils.showOutput(project(), output, file);
+                    PluginUtils.showOutput(project(), output);
                 }
 
                 if (!result.isSuccess()) {
