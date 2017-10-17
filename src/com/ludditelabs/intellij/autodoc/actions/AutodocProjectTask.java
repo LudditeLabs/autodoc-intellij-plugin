@@ -30,6 +30,18 @@ public class AutodocProjectTask extends AutodocBaseCommandTask {
     }
 
     @Override
+    protected void onBeforeRun() {
+        // NOTE: Lock state is checked in AutodocCurrentProject action.
+        PluginUtils.setLockState(myProject, true);
+    }
+
+    @Override
+    protected void onAfterRun() {
+        // NOTE: Lock state is checked in AutodocCurrentProject action.
+        PluginUtils.setLockState(myProject, false);
+    }
+
+    @Override
     protected void execute(@NotNull final ProgressIndicator indicator) {
         String path = myProject.getBasePath();
         if (path == null) {
@@ -77,7 +89,6 @@ public class AutodocProjectTask extends AutodocBaseCommandTask {
                 VfsUtil.markDirtyAndRefresh(true, true, true, root_path);
             }
         });
-
 
         try {
             indicator.setText(cmd.title() + "...");
