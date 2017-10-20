@@ -12,6 +12,7 @@ import com.intellij.openapi.editor.actionSystem.DocCommandGroupId;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -70,7 +71,13 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
                         WriteCommandAction.runWriteCommandAction(project(), new Runnable() {
                             @Override
                             public void run() {
-                                m_document.setText(content);
+                                // IDE accepts only \n.
+                                if (SystemInfo.isWindows) {
+                                    m_document.setText(content.replace(
+                                        "\r\n", "\n"));
+                                }
+                                else
+                                    m_document.setText(content);
                             }
                         });
                     }
