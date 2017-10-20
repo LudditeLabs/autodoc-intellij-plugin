@@ -49,7 +49,6 @@ public class AutodocProjectTask extends AutodocBaseCommandTask {
             return;
         }
 
-
         ExternalCommand cmd = createCommand();
         cmd.setTitle("Autodoc " + project().getName());
         cmd.setWorkingDirectory(path);
