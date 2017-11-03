@@ -24,7 +24,7 @@ public class PluginConfigurable implements Configurable  {
     @Nls
     @Override
     public String getDisplayName() {
-        return "Autodoc Configuration";
+        return "Autodoc";
     }
 
     @Nullable
