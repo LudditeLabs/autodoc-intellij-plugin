@@ -21,8 +21,7 @@ Test main features
   Click on 'Click here'. It must start platform bundle download and show
   notification after bundle installation.
 
-* Also check plugin description and name in plugins settings
- (*Settings -> Plugins*).
+* Also check plugin description and name in plugins settings (*Settings -> Plugins*).
 
 * Open python file. Run action *Code -> Autodoc file*.
   It must update the file with missing docs and show tool output in bottom
@@ -66,11 +65,11 @@ At first, find where the plugin installed. Something like:
   available.
 
   For example, if ``"version":"0.3.7"`` then change to ``"version":"0.3.6"``.
-  Set ``lastModified`` to 0. This will force version checking.
+  Set ``lastModified`` to ``0``. This will force version checking.
 
 * Open IDE. It must show new version notification.
   NOTE: this may change in future. We may add delay between updates checking
-  (for example, one in 3 hr).
+  (for example, once in 3 hr).
 
 * Click *Click here* in popup. Details dialog with new and current version
   must show.
@@ -128,12 +127,12 @@ The following options are supported:
 * S3 URL:
 
   - ``ludditelabs.bundle.s3url``
-  - ``ludditelabs.bundle.bucket``,
+  - ``ludditelabs.bundle.bucket``
   - ``ludditelabs.bundle.folder``
 
   Allows to override S3 URL. Result url will be::
 
-      <s3url>/<bucket>[/<folder>]
+      <s3url>/<bucket>/<folder>
 
   All properties has default values so you may change only one of them.
   For example::
