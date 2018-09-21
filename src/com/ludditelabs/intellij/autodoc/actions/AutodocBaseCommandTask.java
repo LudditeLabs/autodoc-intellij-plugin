@@ -9,11 +9,13 @@ import com.intellij.openapi.project.Project;
 import com.ludditelabs.intellij.autodoc.PluginUtils;
 import com.ludditelabs.intellij.autodoc.bundle.PluginBundleManager;
 import com.ludditelabs.intellij.autodoc.config.PluginSettings;
+import com.ludditelabs.intellij.common.Utils;
 import com.ludditelabs.intellij.common.execution.ExternalCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 
 /**
@@ -131,39 +133,52 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
     }
 
     private boolean checkExe() {
-        // Check if autodoc tool exists.
-        File exe = new File(m_exePath);
-        if (!exe.exists()) {
-            PluginBundleManager mgr = PluginBundleManager.getInstance();
-            if (!mgr.getLocalBundle().isExist()) {
-                mgr.showFirstDownloadNotification(m_project);
-                return false;
-            }
-            else {
-                showError(
-                    "Can't find autodoc tool.\n" +
-                        "Platform bundle is malformed.");
-            }
+        PluginBundleManager mgr = PluginBundleManager.getInstance();
+        if (!mgr.getLocalBundle().isExist()) {
+            mgr.showFirstDownloadNotification(m_project);
             return false;
         }
 
+        if (!ensureExecutable(m_exePath)) {
+            return false;
+        }
+
+        String contentDb = Paths.get(mgr.getLocalBundle().getBundlePath(),
+            "contentdb").toAbsolutePath().toString();
+        contentDb = Utils.exeFilename(contentDb);
+
+        if (!ensureExecutable(contentDb)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean ensureExecutable(final String fileName) {
+        boolean ok = true;
+        File exe = new File(fileName);
+
+        if (!exe.exists()) {
+            ok = false;
+            LOG.debug("Does not exist: ", fileName);
+        }
+
         // Ensure it's runnable.
-        if (!exe.canExecute()) {
-            boolean ok = false;
+        else if (!exe.canExecute()) {
             try {
                 ok = exe.setExecutable(true);
             }
             catch (SecurityException e) {
                 LOG.debug(e);
             }
-
-            if (!ok) {
-                showError(
-                    "Can't run autodoc tool.\n" +
-                        "Platform bundle is malformed.");
-                return false;
-            }
         }
+
+        if (!ok) {
+            showError("Can't run autodoc tool.\n"
+                + "Platform bundle is malformed.");
+            return false;
+        }
+
         return true;
     }
 
