@@ -4,8 +4,8 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.openapi.util.SystemInfo;
 import com.ludditelabs.intellij.autodoc.statistics.StatisticsManager;
+import com.ludditelabs.intellij.common.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,8 +46,7 @@ public class PluginSettings
 
     @NotNull
     private static String buildExePath() {
-        String ext = SystemInfo.isWindows ? ".exe" : ".bin";
-        return getPluginPath("autodoc-pkg", "autodoc" + ext);
+        return Utils.exeFilename(getPluginPath("autodoc-pkg", "autodoc"));
     }
 
     public static PluginSettings getInstance() {
