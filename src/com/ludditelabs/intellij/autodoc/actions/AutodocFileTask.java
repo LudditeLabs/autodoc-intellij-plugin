@@ -121,12 +121,8 @@ public class AutodocFileTask extends AutodocBaseCommandTask {
 
         // If we can create temp filename then save result in it.
         if (out_filename != null) {
-            cmd.addParameters("--no-fix");
-            cmd.addParameters("-o", out_filename);
+            cmd.addParameters("--out-filename", out_filename);
         }
-        // Otherwise just overwrite original file.
-        else
-            cmd.addParameters("--fix");
 
         final String out_path = out_filename;
 
