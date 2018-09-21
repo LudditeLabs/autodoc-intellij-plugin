@@ -9,7 +9,6 @@
       <sourceFolder url="file://$MODULE_DIR$/common/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/src/com/ludditelabs/intellij/common/tests" isTestSource="true" packagePrefix="com.ludditelabs.intellij.common" />
       <sourceFolder url="file://$MODULE_DIR$/common/resources" type="java-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/common" />
       <excludeFolder url="file://$MODULE_DIR$/common/resources/META-INF" />
     </content>
     <orderEntry type="inheritedJdk" />
