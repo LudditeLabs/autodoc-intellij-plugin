@@ -58,7 +58,7 @@ public class StatisticsClient {
 
     // Default statistics endpoint.
     // Can be overridden with the "ludditelabs.autodoc.statistics.url" system property.
-    private static final String STAT_URL = "http://autodoc.ai/statistics/intellij_plugin";
+    private static final String STAT_URL = "https://autodoc.ai/statistics/intellij_plugin";
 
     @NotNull private final HttpClient m_client;
 
