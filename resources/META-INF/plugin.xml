@@ -2,7 +2,7 @@
   <id>com.ludditelabs.autodocintellij.plugin</id>
   <name>autodoc</name>
   <!-- Note: version is managed by the bumpversion tool. -->
-  <version>0.2.4</version>
+  <version>0.2.0</version>
   <vendor email="autodoc@ludditelabs.io" url="http://autodoc.ai/">Luddite Labs</vendor>
 
   <description><![CDATA[
