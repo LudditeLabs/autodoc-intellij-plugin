@@ -15,12 +15,11 @@
       </ul>
 
       <p>
-      Currently the plugin formats code in google style, but can read plan
-      reStructuredText, NumPy style and google style.
+      Currently the plugin formats code in Google style, but can read reStructuredText and NumPy style.
       </p><br/>
 
       <p>
-      <b>NOTE</b>: This release temporary disables java support until better
+      <b>NOTE</b>: This release temporarily disables Java support until better
       implementation.
       </p><br/>
 
@@ -31,13 +30,23 @@
         <li>Follows changes in the API signatures and updates 'Args' section.</li>
         <li>Wraps long lines in docstrings.</li>
         <li>Supports the following reStructuredText constructions:
-        admonitions, block quotes, comments, definition lists, doctests,
-        field lists, common inline formatting (emphasis, strong emphasis, etc),
-        line blocks, lists, literal blocks, option lists, sections.
-        <br/>
-        <em>Other markup constructions are not supported yet</em>.
+          <ul>
+            <li>admonitions</li>
+            <li>block quotes</li>
+            <li>comments</li>
+            <li>definition lists</li>
+            <li>doctests</li>
+            <li>field lists</li>
+            <li>common inline formatting (emphasis, strong emphasis, etc)</li>
+            <li>line blocks</li>
+            <li>lists</li>
+            <li>literal blocks</li>
+            <li>option lists</li>
+            <li>sections.</li>
+          </ul>
+          <em>Other markup constructions are not supported yet</em>.
         </li>
-        <li>Understands docstring styles: plain reStructuredText, Google, NumPy.</li>
+        <li>Understands docstring styles: reStructuredText, Google, NumPy.</li>
       </ul>
       </p><br/>
 
@@ -47,9 +56,12 @@
         <li>Configuration support.</li>
         <li>Format python docstring in NumPy and reStructuredText formats.</li>
         <li>Support more reStructuredText constructions.</li>
-        <li>Documentation.</li>
-        <li>Support more languages (priority: c/c++, java).</li>
+        <li>Plugin documentation.</li>
+        <li>Support more languages (priority: c/c++, Java).</li>
         <li>Better reStructuredText support.</li>
+        <li>Class attributes support.</li>
+        <li>Module and its attributes support.</li>
+        <li>Inherited documentation.</li>
         <li>...</li>
       </ul>
       </p>
@@ -64,7 +76,7 @@
                 <li>Platform bundles.</li>
                 <li>Better python 3.x support.</li>
                 <li>UI improvements.</li>
-                <li>Temporary disable java support.</li>
+                <li>Java support is temporarily disabled.</li>
             </ul>
           </dd>
           <dt>0.1.3</dt>
