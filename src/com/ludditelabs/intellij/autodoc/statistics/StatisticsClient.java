@@ -117,7 +117,12 @@ public class StatisticsClient {
     }
 
     @Nullable
-    private static Credentials getCredentials(String login, String password, String host) {
+    private static Credentials getCredentials(@Nullable String login,
+                                              @Nullable String password,
+                                              String host) {
+        if (login == null)
+            return null;
+
         int domainIndex = login.indexOf("\\");
         if (domainIndex > 0) {
             // if the username is in the form "user\domain"
@@ -147,9 +152,7 @@ public class StatisticsClient {
             if (proxy.PROXY_AUTHENTICATION) {
                 AuthScope authScope = new AuthScope(proxy.PROXY_HOST, proxy.PROXY_PORT);
                 Credentials credentials = getCredentials(
-                    // Old API (141):
-                    proxy.PROXY_LOGIN,
-                    // New API: proxy.getProxyLogin(),
+                    proxy.getProxyLogin(),
                     proxy.getPlainProxyPassword(), proxy.PROXY_HOST);
                 client.getState().setProxyCredentials(authScope, credentials);
             }
