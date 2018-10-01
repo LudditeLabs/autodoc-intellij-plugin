@@ -7,9 +7,105 @@
 
   <description><![CDATA[
       Validate and auto fix source code documentation.
+
+      <ul>
+        <li><b>Code -> Autodoc file</b> to generate documentation strings for Python.</li>
+        <li><b>Code -> Autodoc project</b> to generate documentation strings for all files of a project.</li>
+        <li>Settings: <b>Settings -> Tools -> autodoc</b>.</li>
+      </ul>
+
+      <p>
+      Currently the plugin formats code in Google style, but can read reStructuredText and NumPy style.
+      </p><br/>
+
+      <p>
+      <b>NOTE</b>: This release temporarily disables Java support until better
+      implementation.
+      </p><br/>
+
+      <p>
+      Current features:
+      <ul>
+        <li>Adds missing docstrings.</li>
+        <li>Follows changes in the API signatures and updates 'Args' section.</li>
+        <li>Wraps long lines in docstrings.</li>
+        <li>Supports the following reStructuredText constructions:
+          <ul>
+            <li>admonitions</li>
+            <li>block quotes</li>
+            <li>comments</li>
+            <li>definition lists</li>
+            <li>doctests</li>
+            <li>field lists</li>
+            <li>common inline formatting (emphasis, strong emphasis, etc)</li>
+            <li>line blocks</li>
+            <li>lists</li>
+            <li>literal blocks</li>
+            <li>option lists</li>
+            <li>sections.</li>
+          </ul>
+          <em>Other markup constructions are not supported yet</em>.
+        </li>
+        <li>Understands docstring styles: reStructuredText, Google, NumPy.</li>
+      </ul>
+      </p><br/>
+
+      <p>
+      Future plans:
+      <ul>
+        <li>Configuration support.</li>
+        <li>Format python docstring in NumPy and reStructuredText formats.</li>
+        <li>Support more reStructuredText constructions.</li>
+        <li>Plugin documentation.</li>
+        <li>Support more languages (priority: c/c++, Java).</li>
+        <li>Better reStructuredText support.</li>
+        <li>Class attributes support.</li>
+        <li>Module and its attributes support.</li>
+        <li>Inherited documentation.</li>
+        <li>...</li>
+      </ul>
+      </p>
     ]]></description>
 
   <change-notes><![CDATA[
+      <html>
+        <dl>
+          <dt>0.2.0</dt>
+          <dd>
+            <ul>
+                <li>Platform bundles.</li>
+                <li>Better python 3.x support.</li>
+                <li>UI improvements.</li>
+                <li>Java support is temporarily disabled.</li>
+            </ul>
+          </dd>
+          <dt>0.1.3</dt>
+          <dd>
+            <ul>
+                <li>Better UI.</li>
+                <li>Usage statistics.</li>
+            </ul>
+          </dd>
+          <dt>0.1.2</dt>
+          <dd>
+            <ul>
+                <li>MacOS support.</li>
+            </ul>
+          </dd>
+          <dt>0.1.1</dt>
+          <dd>
+            <ul>
+                <li>Update metadata.</li>
+            </ul>
+          </dd>
+          <dt>0.1.0</dt>
+          <dd>
+            <ul>
+                <li>Initial release.</li>
+            </ul>
+          </dd>
+        </dl>
+      </html>
     ]]>
   </change-notes>
 
