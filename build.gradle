@@ -1,0 +1,59 @@
+plugins {
+    id "org.jetbrains.intellij" version "0.3.11"
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://dl.bintray.com/jetbrains/intellij-plugin-service' }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.jetbrains.intellij'
+
+if (file('gradle-local.properties').exists()) {
+    apply from: 'gradle-local.properties'
+}
+
+group pluginGroup
+version = pluginVersion
+
+
+sourceSets {
+    main {
+        java.srcDirs 'src', 'common/src'
+        resources.srcDir 'resources'
+    }
+    test {
+        java.srcDir 'common/src/com/ludditelabs/intellij/common/tests'
+    }
+}
+
+intellij {
+    pluginName pluginName
+    version ideaVersion
+    type ideaType
+    downloadSources true
+    alternativeIdePath pluginIdePath
+    sandboxDirectory "${project.buildDir}/$pluginSandboxName"
+    patchPluginXml {
+        sinceBuild pluginSinceBuild
+        untilBuild pluginUntilBuild
+    }
+
+    publishPlugin {
+        username publishUsername
+        password publishPassword
+        channels publishChannels
+    }
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
+dependencies {
+    compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+    testCompile 'junit:junit:4.12'
+}

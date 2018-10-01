@@ -1,2 +1,4 @@
-!lib/*.jar
 out/
+build/
+!gradle/wrapper/*.jar
+gradle-local.properties
