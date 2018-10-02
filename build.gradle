@@ -20,11 +20,11 @@ version = pluginVersion
 
 sourceSets {
     main {
-        java.srcDirs 'src', 'common/src'
+        java.srcDirs 'src', 'common/src/main'
         resources.srcDir 'resources'
     }
     test {
-        java.srcDir 'common/src/com/ludditelabs/intellij/common/tests'
+        java.srcDir 'common/src/test'
     }
 }
 
