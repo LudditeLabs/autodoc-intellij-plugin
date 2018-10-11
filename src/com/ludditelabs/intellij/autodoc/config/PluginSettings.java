@@ -36,9 +36,7 @@ import java.nio.file.Paths;
 // We store configs on the application level (global IDE settings).
 @State(
     name = "LudditeLabsAutodocApp",
-    storages = {
-        @Storage(id="other", file = StoragePathMacros.APP_CONFIG + "/ludditelabs.autodoc.xml")
-    }
+    storages = @Storage("ludditelabs.autodoc.xml")
 )
 public class PluginSettings
     implements PersistentStateComponent<PluginSettings.State> {
