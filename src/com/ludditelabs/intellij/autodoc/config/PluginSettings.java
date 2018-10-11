@@ -25,6 +25,7 @@ import com.ludditelabs.intellij.common.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -70,6 +71,35 @@ public class PluginSettings
     }
 
     /**
+     * Get plugin's installation path.
+     *
+     * @return Absolute path.
+     */
+    @Nullable
+    public static String getPluginInstallPath() {
+        final IdeaPluginDescriptor desc = PluginManager.getPlugin(PluginId.getId(ID));
+
+        if (desc != null) {
+            final File desc_path = desc.getPath();
+
+            // If "/classes" exists then we are in the plugin sandbox.
+            final Path cls = Paths.get(desc_path.getAbsolutePath(), "classes");
+            if (Files.exists(cls)) {
+                return Paths.get(cls.toString()).toAbsolutePath().toString();
+            }
+
+            if (!desc_path.isDirectory())
+                return Paths.get(desc_path.getParent()).toString();
+
+            return desc_path.getAbsolutePath();
+        }
+
+        // This can happen only if plugin ID is wrong.
+        // See <id> value in the resources/META-INF/plugin.xml file.
+        return null;
+    }
+
+    /**
      * Build absolute path prefixed with the plugin installation path.
      *
      * @param path path relative to the plugin's installation path.
@@ -77,25 +107,16 @@ public class PluginSettings
      */
     @NotNull
     public static String getPluginPath(String... path) {
-        IdeaPluginDescriptor desc = PluginManager.getPlugin(PluginId.getId(ID));
-        if (desc != null) {
-            // If "/classes" exists then we are in the plugin sandbox.
-            Path cls = Paths.get(
-                desc.getPath().getAbsolutePath(), "classes");
-            if (Files.exists(cls)) {
-                return Paths.get(
-                    cls.toString(), path).toAbsolutePath().toString();
-            }
+        String base_path = System.getProperty("ludditelabs.basepath");
 
-            if (!desc.getPath().isDirectory())
-                return Paths.get(desc.getPath().getParent(), path).toString();
-
-            return Paths.get(
-                desc.getPath().getAbsolutePath(),
-                path).toAbsolutePath().toString();
+        if (base_path == null) {
+            base_path = getPluginInstallPath();
         }
-        // This can happen only if plugin ID is wrong.
-        // See <id> value in the resources/META-INF/plugin.xml file.
+
+        if (base_path != null) {
+            return Paths.get(base_path.trim(), path).toAbsolutePath().toString();
+        }
+
         return "";
     }
 

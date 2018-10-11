@@ -45,6 +45,12 @@ intellij {
         password publishPassword
         channels publishChannels
     }
+
+    runIde {
+        if (pluginBasePath) {
+            jvmArgs "-Dludditelabs.basepath=$pluginBasePath"
+        }
+    }
 }
 
 test {
