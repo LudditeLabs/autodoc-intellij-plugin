@@ -98,11 +98,29 @@ public class AutodocBaseCommandTask extends Task.Backgroundable {
     }
 
     /**
+     * Add option to load autodoc configuration file if it exists in the
+     * project root dir.
+     *
+     * @param cmd Autodoc command.
+     */
+    protected void addConfigParameter(ExternalCommand cmd) {
+        final String cfg_filename = ".autodoc.yml";
+        final String base_path = myProject.getBasePath();
+        final String cfg_path = Paths.get(base_path, cfg_filename).toAbsolutePath().toString();
+
+        final File cfg = new File(cfg_path);
+        if (cfg.exists()) {
+            cmd.addParameters("-c", cfg_path);
+        }
+    }
+
+    /**
      * Create common autodoc command.
      * @return autodoc command with basic parameters.
      */
     protected ExternalCommand createCommand() {
         ExternalCommand cmd = new ExternalCommand(project(), m_exePath);
+        addConfigParameter(cmd);
         return cmd;
     }
 
